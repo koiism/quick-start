@@ -19,7 +19,11 @@ const config = {
   },
   sourceRoot: 'src',
   outputRoot: 'dist',
-  plugins: ['@tarojs/plugin-html'],
+  plugins: [
+    '@tarojs/plugin-html',
+    '@taro-hooks/plugin-vue',
+    '@taro-hooks/plugin-auto-import',
+  ],
   defineConstants: {},
   copy: {
     patterns: [],

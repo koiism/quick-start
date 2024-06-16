@@ -40,6 +40,9 @@
     "@babel/runtime": "^7.7.7",
     "@nutui/icons-vue-taro": "^0.0.9",
     "@nutui/nutui-taro": "^4.3.0",
+    "@taro-hooks/plugin-auto-import": "^2.0.11",
+    "@taro-hooks/plugin-vue": "^2.0.11",
+    "@taro-hooks/shared": "^2.0.11",
     "@tarojs/components": "3.6.30",
     "@tarojs/helper": "3.6.30",
     "@tarojs/plugin-framework-vue3": "3.6.30",
@@ -57,6 +60,7 @@
     "@trpc/client": "^10.45.2",
     "miniprogram-blob": "^2.0.0",
     "miniprogram-formdata": "^2.0.0",
+    "taro-hooks": "^2.0.11",
     "vue": "^3.2.40",
     "web-streams-polyfill": "^4.0.0"
   },
