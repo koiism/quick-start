@@ -2,13 +2,14 @@
   "miniprogramRoot": "./dist",
   "projectname": "microapp",
   "description": "",
-  "appid": "touristappid",
+  "appid": "wx09fa5990c427f6c0",
   "setting": {
     "urlCheck": false,
-    "es6": false,
+    "es6": true,
     "enhance": false,
     "compileHotReLoad": false,
     "postcss": false,
+    "bigPackageSizeSupport": true,
     "minified": false
   },
   "compileType": "miniprogram"

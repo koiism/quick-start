@@ -13,7 +13,6 @@ export default defineAppConfig({
       defaultContentBox: true,
     },
   },
-  renderer: 'skyline',
   lazyCodeLoading: 'requiredComponents',
   componentFramework: 'glass-easel',
 });

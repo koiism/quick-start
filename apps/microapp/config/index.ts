@@ -106,9 +106,11 @@ const config = {
   },
 };
 
-export default function (merge) {
+export default async function (merge) {
   if (process.env.NODE_ENV === 'development') {
-    return merge({}, config, import('./dev'));
+    const devConfig = await import('./dev');
+    return merge({}, config, devConfig.default);
   }
-  return merge({}, config, import('./prod'));
+  const prodConfig = await import('./prod');
+  return merge({}, config, prodConfig.default);
 }
