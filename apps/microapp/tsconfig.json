@@ -23,35 +23,41 @@
       "node_modules/@types"
     ],
     "paths": {
-      "@server/*": [
+      "@/server/*": [
         "../server/src/*"
       ],
-      "@server": [
+      "@/server": [
         "../server/src"
       ],
-      "@pages/*": [
+      "@/pages/*": [
         "./src/pages/*"
       ],
-      "@pages": [
+      "@/pages": [
         "./src/pages"
       ],
-      "@queries/*": [
+      "@/queries/*": [
         "./src/queries/*"
       ],
-      "@queries": [
+      "@/queries": [
         "./src/queries"
       ],
-      "@components/*": [
+      "@/components/*": [
         "./src/components/*"
       ],
-      "@components": [
+      "@/components": [
         "./src/components"
       ],
-      "@utils/*": [
+      "@/utils/*": [
         "./src/utils/*"
       ],
-      "@utils": [
+      "@/utils": [
         "./src/utils"
+      ],
+      "@/stores/*": [
+        "./src/stores/*"
+      ],
+      "@/stores": [
+        "./src/stores"
       ],
     },
   },

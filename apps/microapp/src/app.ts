@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import './app.scss';
 
-import '@utils/polyfills/fetch';
+import '@/utils/polyfills/fetch';
 
 const App = createApp({
   onShow(options) {},

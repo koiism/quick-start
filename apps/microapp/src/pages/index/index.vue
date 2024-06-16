@@ -1,4 +1,5 @@
 <template>
+  <nav-bar></nav-bar>
   <view class="demo">
     <view>
       <nut-button type="primary" @click="handleClick">Hello</nut-button>
@@ -9,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { client } from '@queries';
+import { client } from '@/queries';
 
 const name = ref('');
 

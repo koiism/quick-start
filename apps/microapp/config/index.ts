@@ -103,10 +103,11 @@ const config = {
     },
   },
   alias: {
-    '@components': path.resolve(__dirname, '..', 'src/components'),
-    '@utils': path.resolve(__dirname, '..', 'src/utils'),
-    '@pages': path.resolve(__dirname, '..', 'src/pages'),
-    '@queries': path.resolve(__dirname, '..', 'src/queries'),
+    '@/components': path.resolve(__dirname, '..', 'src/components'),
+    '@/utils': path.resolve(__dirname, '..', 'src/utils'),
+    '@/pages': path.resolve(__dirname, '..', 'src/pages'),
+    '@/queries': path.resolve(__dirname, '..', 'src/queries'),
+    '@/stores': path.resolve(__dirname, '..', 'src/stores'),
   },
 };
 

@@ -60,6 +60,7 @@
     "@trpc/client": "^10.45.2",
     "miniprogram-blob": "^2.0.0",
     "miniprogram-formdata": "^2.0.0",
+    "pinia": "^2.1.7",
     "taro-hooks": "^2.0.11",
     "vue": "^3.2.40",
     "web-streams-polyfill": "^4.0.0"
