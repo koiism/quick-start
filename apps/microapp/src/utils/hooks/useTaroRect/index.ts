@@ -71,7 +71,6 @@ export const useTaroRect = (
           .select(`#${id}`)
           .boundingClientRect()
           .exec(function (rect: any) {
-            console.log(`output->rect`, rect);
             if (rect[0]) {
               resolve(rect[0]);
             } else {

@@ -54,7 +54,6 @@ if (process.env.TARO_PLATFORM !== 'web') {
         writable: false, // 防止属性值被改写
         value: polyfills[key],
       });
-      console.log(`output->window`, window[key]);
     } catch (e) {
       console.warn(e);
       continue;

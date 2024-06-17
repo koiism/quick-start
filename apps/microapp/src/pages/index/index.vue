@@ -1,10 +1,10 @@
 <template>
   <nav-bar></nav-bar>
-  <view class="demo">
+  <view class="page-container" :="$attrs">
     <view>
       <nut-button type="primary" @click="handleClick">Hello</nut-button>
     </view>
-    <view>Hello {{ name ? ', ' + name : '' }}</view>
+    <view class="btn-special">Hello {{ name ? ', ' + name : '' }}</view>
   </view>
 </template>
 
@@ -21,11 +21,7 @@ const handleClick = async () => {
 </script>
 
 <style>
-.demo {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.page-container {
+  @apply h-full flex flex-col items-center justify-center;
 }
 </style>

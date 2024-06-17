@@ -9,7 +9,7 @@ const config = {
     if (input?.file?.replace(/\\+/g, '/').indexOf('@nutui') > -1) {
       return 375;
     }
-    return 750;
+    return 375;
   },
   deviceRatio: {
     640: 2.34 / 2,
@@ -23,6 +23,7 @@ const config = {
     '@tarojs/plugin-html',
     '@taro-hooks/plugin-vue',
     '@taro-hooks/plugin-auto-import',
+    '@dcasia/mini-program-tailwind-webpack-plugin/dist/taro',
   ],
   defineConstants: {},
   copy: {
@@ -54,6 +55,7 @@ const config = {
       pxtransform: {
         enable: true,
         config: {
+          onePxTransform: false,
           // selectorBlackList: ['nut-']
         },
       },

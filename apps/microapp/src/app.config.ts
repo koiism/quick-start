@@ -1,10 +1,11 @@
 export default defineAppConfig({
   pages: ['pages/index/index'],
   window: {
-    backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#fff',
+    navigationBarTextStyle: '@navTxtStyle',
+    navigationBarBackgroundColor: '@navBgColor',
+    backgroundTextStyle: '@bgTxtStyle',
+    backgroundColor: '@bgColor',
     navigationBarTitleText: 'WeChat',
-    navigationBarTextStyle: 'black',
     navigationStyle: 'custom',
   },
   rendererOptions: {
@@ -15,4 +16,6 @@ export default defineAppConfig({
   },
   lazyCodeLoading: 'requiredComponents',
   componentFramework: 'glass-easel',
+  darkmode: true,
+  themeLocation: 'theme.json',
 });
