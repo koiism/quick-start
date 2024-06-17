@@ -1,4 +1,4 @@
-import Blob from 'miniprogram-blob';
+import Blob from './Blob';
 
 import { Headers } from './Headers';
 import { Body } from './Body';

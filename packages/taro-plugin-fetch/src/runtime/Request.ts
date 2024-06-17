@@ -8,8 +8,8 @@ export class Request extends Body implements globalThis.Request {
   headers: Headers;
   integrity: string;
   keepalive: boolean;
-  method: string;
-  mode: RequestMode;
+  method: 'GET' | 'POST';
+  mode: 'cors' | 'no-cors' | 'same-origin';
   redirect: RequestRedirect;
   referrer: string;
   referrerPolicy: ReferrerPolicy;

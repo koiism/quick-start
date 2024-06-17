@@ -9,11 +9,9 @@ export async function fetch(input: RequestInfo | URL, init?: RequestInit) {
     const { method, url, headers, mode, credentials } = req;
 
     const { statusCode, errMsg, header, data } = await request<ArrayBuffer>({
-        // @ts-ignore
         method,
         url,
         header: Object.fromEntries([...headers]),
-        // @ts-ignore
         mode,
         credentials,
         data: await req.arrayBuffer(),

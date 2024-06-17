@@ -1,5 +1,4 @@
-import 'web-streams-polyfill/dist/polyfill';
-import Blob from 'miniprogram-blob';
+import Blob from './Blob';
 import FormData from 'miniprogram-formdata';
 
 export class Body {
