@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Components from 'unplugin-vue-components/webpack';
 import NutUIResolver from '@nutui/auto-import-resolver';
 import path from 'path';
