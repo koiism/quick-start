@@ -20,6 +20,7 @@ const config = {
   sourceRoot: 'src',
   outputRoot: 'dist',
   plugins: [
+    'taro-plugin-fetch',
     '@tarojs/plugin-html',
     '@taro-hooks/plugin-vue',
     '@taro-hooks/plugin-auto-import',
