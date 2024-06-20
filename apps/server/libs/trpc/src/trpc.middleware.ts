@@ -1,7 +1,7 @@
 // trpc.middleware.ts
 import { Request, Response, NextFunction } from 'express';
 import * as tRpcExpress from '@trpc/server/adapters/express';
-import { Inject, Injectable, NestMiddleware, Type } from '@nestjs/common';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
 import { ITrpcModuleOptions, TRPC_ROUTER_TOKEN } from './trpc.interface';
