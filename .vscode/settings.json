@@ -14,5 +14,7 @@
   },
   "tailwindCSS.experimental.configFile": {
     "apps/microapp/windi.config.ts": "apps/microapp/**/*"
-  }
+  },
+  "files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true
 }
