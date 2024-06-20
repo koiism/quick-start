@@ -4,7 +4,7 @@
     <view>
       <nut-button type="primary" @click="handleClick">Hello</nut-button>
     </view>
-    <view class="btn-special">Hello {{ name ? ', ' + name : '' }}</view>
+    <view class="text-primary">Hello {{ name ? ', ' + name : '' }}</view>
   </view>
 </template>
 

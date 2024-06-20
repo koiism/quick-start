@@ -3,8 +3,8 @@
 .root,
 page {
   --app-font-size: 12px;
+
   --app-bg: #1a1a1a;
-  --app-sub-title-color: #96734f;
   --nav-bg: #1e1e1e;
   --text-color: #ffffff;
   --primary-color: #13ed8f;
@@ -14,7 +14,6 @@ page {
   // 适配 暗色模式
   @media (prefers-color-scheme: dark) {
     --app-bg: #1a1a1a;
-    --app-sub-title-color: #96734f;
     --nav-bg: #1e1e1e;
     --text-color: #ffffff;
     --primary-color: #13ed8f;
