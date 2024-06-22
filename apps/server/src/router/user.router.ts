@@ -1,56 +1,38 @@
 import { procedure, router } from '@libs/trpc';
-import { GreetingService } from '../service/greeting.service';
-import { z } from 'zod';
+import { TAchievementResponse, TUserResponse, zLogin } from './zods/user';
+import { mockAchievement, mockUser } from './mock';
+import { ERROR_CODE, ERROR_MESSAGE } from './zods/common';
 
+//  传入微信小程序code, 返回用户id
+const login = procedure.input(zLogin).query<TUserResponse>(() => {
+  return {
+    code: ERROR_CODE.SUCCESS,
+    message: ERROR_MESSAGE.SUCCESS,
+    data: mockUser,
+  };
+});
+
+//  通过cookie获取用户头像用户名信息
+const getUserInfo = procedure.query<TUserResponse>(() => {
+  return {
+    code: ERROR_CODE.SUCCESS,
+    message: ERROR_MESSAGE.SUCCESS,
+    data: mockUser,
+  };
+});
+
+//  获取用户的成就信息
+const getAchievement = procedure.query<TAchievementResponse>(() => {
+  return {
+    code: ERROR_CODE.SUCCESS,
+    message: ERROR_MESSAGE.SUCCESS,
+    data: mockAchievement,
+  };
+});
 export const UserRouter = router({
   user: router({
-    greeting: procedure
-      .input(
-        z.object({
-          name: z.string(),
-        }),
-      )
-      .query(async ({ ctx, input }) => {
-        const greeting = await ctx.inject(GreetingService);
-        ctx.req.headers.cookie?.split('')
-        return greeting.getHello(input.name);
-      }),
-
-    //  传入微信小程序code, 返回用户id
-    login: procedure
-      .input(
-        z.object({
-          code: z.string()
-        })
-      ).query(() => {
-
-      }),
-    //  获取用户头像用户名信息
-    getUserInfo: procedure.query(() => {
-      type TUserInfo = {
-        userName: string,
-        avatarUrl: string
-      }
-      const userInfo: TUserInfo = {
-        userName: '',
-        avatarUrl: ''
-      };
-      return userInfo;
-    }),
-
-    //  获取用户的成就信息
-    getAchievement: procedure.query(() => {
-      type TAchievement = {
-        achievementName: string,
-        achievementDesc: string,
-        achievementImg: string
-      }
-      const achievement: TAchievement = {
-        achievementName: '',
-        achievementDesc: '',
-        achievementImg: ''
-      };
-      return achievement;
-    })
+    login,
+    getUserInfo,
+    getAchievement,
   }),
 });

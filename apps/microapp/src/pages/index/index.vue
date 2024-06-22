@@ -23,8 +23,8 @@ const name = ref('');
 
 const { navPlaceholderHeight } = useNavBarHeight();
 const handleClick = async () => {
-  const response = await client.user.greeting.query({ name: 'Tim' });
-  name.value = response;
+  const response = await client.user.login.query({ code: '123' });
+  response;
 };
 </script>
 

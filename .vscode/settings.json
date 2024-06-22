@@ -16,5 +16,9 @@
     "apps/microapp/windi.config.ts": "apps/microapp/**/*"
   },
   "files.autoSave": "onFocusChange",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "DYNO",
+    "SLOPEY"
+  ]
 }
