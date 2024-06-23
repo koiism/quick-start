@@ -3,12 +3,18 @@
     "navTxtStyle": "black",
     "navBgColor": "#1E1E1E",
     "bgTxtStyle": "light",
-    "bgColor": "#1A1A1A"
+    "bgColor": "#1A1A1A",
+    "tabBarTxtColor": "#ffffff",
+    "tabBarBgColor": "#000000",
+    "primaryColor": "#13ed8f"
   },
   "dark": {
     "navTxtStyle": "white",
     "navBgColor": "#1E1E1E",
     "bgTxtStyle": "dark",
-    "bgColor": "#1A1A1A"
+    "bgColor": "#1A1A1A",
+    "tabBarTxtColor": "#ffffff",
+    "tabBarBgColor": "#000000",
+    "primaryColor": "#13ed8f"
   }
 }
