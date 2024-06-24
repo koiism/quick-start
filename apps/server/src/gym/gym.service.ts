@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/user/user.entity";
 import { Repository } from "typeorm";
 import { Gym } from "./gym.entity";
 import { TGym } from "./gym";
+import { number } from "zod";
 
 @Injectable()
 export class GymService {
@@ -18,6 +19,22 @@ export class GymService {
                 id: id
             }
         });
-        gym.
+        if (!gym) {
+            Logger.error("Gym not found, id=", number);
+            return null;
+        }
+        return {
+            id: gym.id,
+            name: gym.name,
+            location: {
+                address: gym.address,
+                latitude: gym.latitude,
+                longitude: gym.longitude
+            },
+            phone: gym.phone,
+            boulderNum: 1,
+            distance: "0.5km",
+        };
+
     }
 }

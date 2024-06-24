@@ -25,11 +25,12 @@ const getNearbyGym = procedure
   .query<TUserResponse>(async ({ ctx, input }) => {
     const gymService = await ctx.get(GymService);
   });
+
+
 //  查询攀岩馆详情
 const getGymDetailById = procedure
   .input(zId)
   .query<TGymResponse>(async ({ ctx, input }) => {
-
     try {
       const gymService = await ctx.get(GymService);
       const gym = await gymService.getGym(input.id);
@@ -52,14 +53,6 @@ const getGymDetailById = procedure
         message: ERROR_MESSAGE.FAIL_SYSTEM_ERROR,
       };
     }
-  });
-
-const result: TGymResponse = {
-  data: mockGym,
-  code: 0,
-  message: 'ok',
-};
-return result;
   });
 export const GymRouter = router({
   gym: router({

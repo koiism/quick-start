@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { createZListResponse, createZResponse } from '../router/zods/common';
+import { createZListResponse, createZResponse, zLocation } from '../router/zods/common';
 
 const zGym = z.object({
   id: z.number(),
   name: z.string(),
-  address: z.string(),
+  location: zLocation,
   phone: z.string(),
   distance: z.string(),
   boulderNum: z.number(),

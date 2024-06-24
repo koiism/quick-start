@@ -7,7 +7,11 @@ import { TWall } from '../zods/wall';
 export const mockGym: TGym = {
   id: 1,
   name: 'mock gym',
-  address: 'mock address',
+  location: {
+    address: 'mock address',
+    latitude: 1,
+    longitude: 1,
+  },
   phone: '17726062961',
   distance: '837m',
   boulderNum: 12,
