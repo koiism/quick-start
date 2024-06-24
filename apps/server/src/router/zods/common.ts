@@ -24,7 +24,7 @@ const createZListResponse = <T>(schema: z.ZodType<T>) => {
 };
 
 const zLocation = z.object({
-  locationName: z.string().optional(),
+  address: z.string().optional(),
   latitude: z.number(),
   longitude: z.number(),
 });
