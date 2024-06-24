@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { createZResponse } from './common';
-import { zRouteLevel } from './route';
+import { createZResponse } from '../router/zods/common';
+import { zRouteLevel } from '../router/zods/route';
 
 const zUser = z.object({
   id: z.number(),
-  name: z.string(),
-  avatar: z.string(),
+  userName: z.string(),
+  avatarUrl: z.string(),
 });
 type TUser = z.infer<typeof zUser>;
 

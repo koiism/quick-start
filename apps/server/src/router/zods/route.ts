@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { zUser } from './user';
+import { zUser } from '../../user/user';
 import { createZResponse, createZListResponse } from './common';
 
 enum ROUTE_LEVEL {

@@ -8,6 +8,9 @@ type Context = {
   inject: <TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
   ) => Promise<TResult>;
+  get: <TInput = any, TResult = TInput>(
+    typeOrToken: Type<TInput> | Function | string | symbol,
+  ) => Promise<TResult>;
 };
 
 type BuildCreateContextFn<TContext, TContextFn = () => TContext> = (
@@ -34,10 +37,20 @@ const buildCreateContext: BuildCreateContextFn<Context> = (
     });
   };
 
+  const get = <TInput = any, TResult = TInput>(
+    typeOrToken: Type<TInput> | Function | string | symbol,
+  ) => {
+    // 获取请求上下文对应moduleRef实例并get依赖
+    return moduleRef.get<TResult>(typeOrToken, {
+      strict: false,
+    });
+  };
+
   return () => ({
     req,
     res,
     inject,
+    get,
   });
 };
 

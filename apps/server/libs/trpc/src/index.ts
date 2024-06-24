@@ -1,4 +1,4 @@
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 import { Context } from './buildCreateContext';
 
 export { tRPCModule } from './trpc.module';

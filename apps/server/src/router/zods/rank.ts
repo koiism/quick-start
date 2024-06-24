@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createZListResponse, createZResponse } from './common';
-import { zUser } from './user';
+import { zUser } from '../../user/user';
 
 enum RANK_TYPE {
   EXP,

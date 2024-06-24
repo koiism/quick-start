@@ -1,7 +1,7 @@
 import { TGym } from '../zods/gym';
 import { TRank } from '../zods/rank';
 import { ROUTE_LEVEL, ROUTE_STYLE, TRoute, WALL_ANGLE } from '../zods/route';
-import { TAchievement, TUser } from '../zods/user';
+import { TAchievement, TUser } from '../../user/user';
 import { TWall } from '../zods/wall';
 
 export const mockGym: TGym = {
@@ -22,8 +22,8 @@ export const mockRoute: TRoute = {
   finishNum: 9,
   creator: {
     id: 1,
-    name: 'mock creator',
-    avatar: 'https://avatars.githubusercontent.com/u/100000000?v=4',
+    userName: 'mock creator',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/100000000?v=4',
   },
   wallAngle: WALL_ANGLE.ROOF,
   style: [ROUTE_STYLE.DYNO],
@@ -31,8 +31,8 @@ export const mockRoute: TRoute = {
 
 export const mockUser: TUser = {
   id: 1,
-  name: '咩咩',
-  avatar: 'https://avatars.githubusercontent.com/u/100000000?v=4',
+  userName: '咩咩',
+  avatarUrl: 'https://avatars.githubusercontent.com/u/100000000?v=4',
 };
 
 export const mockAchievement: TAchievement = {
@@ -56,8 +56,8 @@ export const mockWall: TWall = {
 export const mockRank: TRank = {
   user: {
     id: 1,
-    name: '咩咩',
-    avatar: 'https://avatars.githubusercontent.com/u/100000000?v=4',
+    userName: '咩咩',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/100000000?v=4',
   },
   exp: 1,
 };
