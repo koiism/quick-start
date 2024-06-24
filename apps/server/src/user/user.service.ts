@@ -19,13 +19,14 @@ export class UserService {
         //1.请求微信接口
         const { openId, unionId } = this.getUserInfoFromWechat(code);
         //2.查询用户信息
-        const user = await this.userRepository.findOne({ select: ["userName", "avatarUrl"], where: { "openId": openId, "unionId": unionId } });
+        const user = await this.userRepository.findOne({ select: ["id", "userName", "avatarUrl"], where: { "openId": openId, "unionId": unionId } });
         //3.用户信息存在，返回用户信息
         if (user) {
             return user;
         } else {  //4.用户信息不存在，创建用户，保存用户信息，返回用户信息  
             const defaultUser = this.defaultUser(openId, unionId);
-            return await this.userRepository.save(defaultUser)
+            const { id, userName, avatarUrl } = await this.userRepository.save(defaultUser);
+            return { id, userName, avatarUrl }
         }
     }
 

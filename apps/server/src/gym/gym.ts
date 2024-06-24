@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createZListResponse, createZResponse } from './common';
+import { createZListResponse, createZResponse } from '../router/zods/common';
 
 const zGym = z.object({
   id: z.number(),

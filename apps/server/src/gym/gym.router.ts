@@ -1,7 +1,7 @@
-import { mockGym } from './mock';
+import { mockGym } from '../router/mock';
 import { procedure, router } from '@libs/trpc';
-import { zId, zLocation, zPagination } from './zods/common';
-import { TGymListResponse, TGymResponse } from './zods/gym';
+import { zId, zLocation, zPagination } from '../router/zods/common';
+import { TGymListResponse, TGymResponse } from './gym';
 
 //  查询附近的攀岩馆列表
 const getNearbyGymList = procedure

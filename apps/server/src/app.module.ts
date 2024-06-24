@@ -19,7 +19,7 @@ import { UsersModule } from './user/user.module';
       port: 3306,
       username: 'root',
       password: 'yangyi123',
-      database: 'boulder-book',
+      database: 'boulder_book',
       entities: [User],
       //synchronize: true,
     }),

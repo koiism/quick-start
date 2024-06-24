@@ -17,6 +17,8 @@ CREATE TABLE `gym` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '岩馆名称',
     `address` VARCHAR(500) NOT NULL DEFAULT '' COMMENT '岩馆地址',
+    `latitude` double NOT NULL DEFAULT 0 COMMENT '地点纬度',
+    `longitude` double NOT NULL DEFAULT 0 COMMENT '地点经度',
     `phone` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '岩馆电话',
     `business_hour` VARCHAR(200) NOT NULL DEFAULT '' COMMENT '营业时间',
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

@@ -1,4 +1,4 @@
-import { TGym } from '../zods/gym';
+import { TGym } from '../../gym/gym';
 import { TRank } from '../zods/rank';
 import { ROUTE_LEVEL, ROUTE_STYLE, TRoute, WALL_ANGLE } from '../zods/route';
 import { TAchievement, TUser } from '../../user/user';

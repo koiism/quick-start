@@ -1,6 +1,6 @@
 import { procedure, router } from '@libs/trpc';
 import { TAchievementResponse, TUserResponse, zLogin } from './user';
-import { mockAchievement, mockUser } from '../router/mock';
+import { mockAchievement } from '../router/mock';
 import { ERROR_CODE, ERROR_MESSAGE } from '../router/zods/common';
 import { UserService } from './user.service';
 import { Logger } from '@nestjs/common';
