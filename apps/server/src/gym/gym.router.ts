@@ -28,9 +28,10 @@ const getNearbyGym = procedure
     };
     return result;
   });
+
 //  查询攀岩馆详情
 const getGymDetailById = procedure
-  .input(zId)
+  .input(zId.merge(zLocation))
   .query<TGymResponse>(async ({ input }) => {
     input;
     const result: TGymResponse = {
