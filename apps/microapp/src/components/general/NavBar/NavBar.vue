@@ -7,7 +7,14 @@
         v-if="props.leftShow && notFirstPage"
         @click="goBack"
       >
-        <svg-icon type="arrow-left"></svg-icon>
+        <svg-icon type="arrow" direction="left"></svg-icon>
+      </view>
+      <view
+        class="nav-bar-left"
+        v-else-if="props.leftShow && !isIndex"
+        @click="goHome"
+      >
+        <svg-icon type="home"></svg-icon>
       </view>
       <slot></slot>
     </view>
@@ -17,7 +24,7 @@
 <script setup lang="ts">
 import { useNavBarHeight } from '@/utils/hooks/useNavBarHeight';
 import { usePagesStack } from '@/utils/hooks/usePagesStack';
-import { goBack } from '@/utils/routers';
+import { goBack, goHome } from '@/utils/routers';
 
 interface IProps {
   leftShow?: boolean;
@@ -29,7 +36,7 @@ const props = withDefaults(defineProps<IProps>(), {
   fullScreen: false,
 });
 
-const { notFirstPage } = usePagesStack();
+const { notFirstPage, isIndex } = usePagesStack();
 
 const { statusBarHeight, navBarHeight, navPlaceholderHeight } =
   useNavBarHeight();

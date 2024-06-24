@@ -4,4 +4,10 @@ const goBack = () => {
   Taro.navigateBack();
 };
 
-export { goBack };
+const goHome = () => {
+  Taro.reLaunch({
+    url: '/pages/index/index',
+  });
+};
+
+export { goBack, goHome };

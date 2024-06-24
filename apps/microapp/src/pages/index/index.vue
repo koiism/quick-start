@@ -1,35 +1,21 @@
 <template>
-  <nav-bar full-screen>首页</nav-bar>
-  <view
-    class="page-container"
+  <scroll-view
     :="$attrs"
-    :style="{
-      'padding-top': navPlaceholderHeight,
-    }"
+    class="page-container"
+    :using-sticky="true"
+    :scroll-y="true"
+    :enable-flex="true"
   >
-    <view>
-      <nut-button type="primary" @click="handleClick">Hello</nut-button>
-    </view>
-    <view class="text-primary">Hello {{ name ? ', ' + name : '' }}</view>
-  </view>
+    <gym-header></gym-header>
+  </scroll-view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { client } from '@/queries';
-import { useNavBarHeight } from '@/utils/hooks/useNavBarHeight';
-
-const name = ref('');
-
-const { navPlaceholderHeight } = useNavBarHeight();
-const handleClick = async () => {
-  const response = await client.user.login.query({ code: '123' });
-  response;
-};
+import GymHeader from './components/header.vue';
 </script>
 
-<style>
+<style lang="scss">
 .page-container {
-  @apply h-full flex flex-col items-center justify-center;
+  @apply flex flex-col gap-2 h-screen box-border;
 }
 </style>
