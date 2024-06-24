@@ -4,7 +4,7 @@
       class="tab-bar-item"
       v-for="item of list"
       :key="item.iconClass"
-      :class="{ active: selectedPagePath === item.pagePath }"
+      :class="{ active: currentPagePath === item.pagePath }"
       @click="tabSwitch(item.pagePath)"
     >
       <view class="icon" :class="{ [item.iconClass]: true }" />
@@ -16,16 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { useTabBarStore } from '@/stores/tabBar';
+import { usePagesStack } from '@/utils/hooks/usePagesStack';
 import Taro from '@tarojs/taro';
-import { storeToRefs } from 'pinia';
 
-const { selectedPagePath } = storeToRefs(useTabBarStore());
-const switchTab = useTabBarStore().switchTab;
+const { currentPagePath } = usePagesStack();
 
-async function tabSwitch(url: string) {
-  switchTab(url);
-  await Taro.switchTab({ url });
+function tabSwitch(url: string) {
+  Taro.switchTab({ url });
 }
 
 const list = [
