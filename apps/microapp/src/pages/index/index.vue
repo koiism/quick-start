@@ -1,35 +1,24 @@
 <template>
-  <nav-bar full-screen>首页</nav-bar>
-  <view
-    class="page-container"
-    :="$attrs"
-    :style="{
-      'padding-top': navPlaceholderHeight,
-    }"
-  >
-    <view>
-      <nut-button type="primary" @click="handleClick">Hello</nut-button>
-    </view>
-    <view class="text-primary">Hello {{ name ? ', ' + name : '' }}</view>
-  </view>
+  <scroll-view :="$attrs" class="page-container">
+    <view
+      class="head"
+      :style="{
+        'padding-top': navPlaceholderHeight,
+      }"
+    ></view>
+  </scroll-view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { client } from '@/queries';
 import { useNavBarHeight } from '@/utils/hooks/useNavBarHeight';
 
-const name = ref('');
-
 const { navPlaceholderHeight } = useNavBarHeight();
-const handleClick = async () => {
-  const response = await client.user.login.query({ code: '123' });
-  response;
-};
 </script>
 
-<style>
+<style lang="scss">
 .page-container {
-  @apply h-full flex flex-col items-center justify-center;
+  .head {
+    height: 100rpx;
+  }
 }
 </style>
