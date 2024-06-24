@@ -11,6 +11,14 @@ page,
   --icon-color: #979797;
   --icon-color-active: #ffffff;
   --card-bg: #2d2d2d;
+  --primary-text: var(--app-bg);
+
+  // nut-theme
+  --nut-button-primary-background-color: var(--primary-color);
+  --nut-button-primary-color: var(--primary-text);
+  --nut-button-border-radius: 4px;
+  --nut-button-default-padding: 4px;
+  --nut-button-default-height: auto;
   // 适配 暗色模式
   @media (prefers-color-scheme: dark) {
     --app-bg: #1a1a1a;
@@ -20,6 +28,11 @@ page,
     --icon-color: #979797;
     --icon-color-active: #ffffff;
     --card-bg: #2d2d2d;
+    --primary-text: var(--app-bg);
+
+    // nut-theme
+    --nut-button-primary-background-color: var(--primary-color);
+    --nut-button-primary-color: var(--primary-text);
   }
 
   font-size: var(--app-font-size);

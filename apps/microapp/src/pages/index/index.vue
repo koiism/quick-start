@@ -1,24 +1,21 @@
 <template>
-  <scroll-view :="$attrs" class="page-container">
-    <view
-      class="head"
-      :style="{
-        'padding-top': navPlaceholderHeight,
-      }"
-    ></view>
+  <scroll-view
+    :="$attrs"
+    class="page-container"
+    :using-sticky="true"
+    :scroll-y="true"
+    :enable-flex="true"
+  >
+    <gym-header></gym-header>
   </scroll-view>
 </template>
 
 <script setup lang="ts">
-import { useNavBarHeight } from '@/utils/hooks/useNavBarHeight';
-
-const { navPlaceholderHeight } = useNavBarHeight();
+import GymHeader from './components/header.vue';
 </script>
 
 <style lang="scss">
 .page-container {
-  .head {
-    height: 100rpx;
-  }
+  @apply flex flex-col gap-2 h-screen box-border;
 }
 </style>

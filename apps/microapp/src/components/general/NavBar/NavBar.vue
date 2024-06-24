@@ -7,7 +7,7 @@
         v-if="props.leftShow && notFirstPage"
         @click="goBack"
       >
-        <svg-icon type="arrow-left"></svg-icon>
+        <svg-icon type="arrow" direction="left"></svg-icon>
       </view>
       <view
         class="nav-bar-left"
