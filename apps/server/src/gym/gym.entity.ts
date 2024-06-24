@@ -15,5 +15,4 @@ export class Gym extends Base {
     phone: string;
     @Column({ type: "varchar", name: "business_hour" })
     businessHour: string;
-
 }

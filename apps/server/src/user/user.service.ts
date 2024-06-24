@@ -57,6 +57,6 @@ export class UserService {
     }
 
     async getUserInfo(userId: number): Promise<TUser | null> {
-        return await this.userRepository.findOne({ select: ["userName", "avatarUrl"], where: { "id": userId } });
+        return await this.userRepository.findOne({ select: ["id", "userName", "avatarUrl"], where: { "id": userId } });
     }
 }

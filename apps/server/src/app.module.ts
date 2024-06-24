@@ -6,6 +6,7 @@ import { appRouter } from './router';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
 import { UsersModule } from './user/user.module';
+import { GymsModule } from './gym/gym.module';
 
 @Module({
   imports: [
@@ -20,10 +21,11 @@ import { UsersModule } from './user/user.module';
       username: 'root',
       password: 'yangyi123',
       database: 'boulder_book',
-      entities: [User],
+      autoLoadEntities: true,
       //synchronize: true,
     }),
     UsersModule,
+    GymsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
