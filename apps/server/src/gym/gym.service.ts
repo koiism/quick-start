@@ -13,6 +13,11 @@ export class GymService {
         @InjectRepository(Gym) private readonly gymRepository: Repository<Gym>,
     ) { }
 
+    /**
+     * 查询攀岩馆信息
+     * @param id 
+     * @returns 
+     */
     async getGym(id: number): Promise<TGym | null> {
         const gym = await this.gymRepository.findOne({
             where: {
