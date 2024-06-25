@@ -7,6 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CustomTabPane: typeof import('./src/components/general/CustomTabPane/CustomTabPane.vue')['default']
+    CustomTabs: typeof import('./src/components/general/CustomTabs/CustomTabs.vue')['default']
     NavBar: typeof import('./src/components/general/NavBar/NavBar.vue')['default']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
     SvgIcon: typeof import('./src/components/general/SvgIcon/SvgIcon.vue')['default']

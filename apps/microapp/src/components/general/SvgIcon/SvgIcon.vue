@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-type TIconTypes =
+export type TIconTypes =
   | 'arrow'
   | 'home'
   | 'heart'

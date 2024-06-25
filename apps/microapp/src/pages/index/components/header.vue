@@ -1,11 +1,11 @@
 <template>
-  <view class="flex flex-col gap-2 items-stretch px-4 mb-2">
-    <view
-      class="flex items-center justify-between"
-      :style="{
-        'padding-top': navPlaceholderHeight,
-      }"
-    >
+  <view
+    class="gym-header"
+    :style="{
+      'padding-top': navPlaceholderHeight,
+    }"
+  >
+    <view class="flex items-center justify-between">
       <view class="flex items-center gap-1 text-sm">
         <!-- <svg-icon type="heart" color="icon" size="sm"></svg-icon> -->
         {{ gymData?.name }}
@@ -16,7 +16,9 @@
           size="sm"
         ></svg-icon>
       </view>
-      <svg-icon type="share" color="icon" size="sm"></svg-icon>
+      <button open-type="share" class="bg-transparent p-0 m-0">
+        <svg-icon type="share" color="icon" size="sm"></svg-icon>
+      </button>
     </view>
     <view class="flex gap-2 items-center justify-between">
       <view class="flex flex-col gap-1">
@@ -47,12 +49,18 @@
 import { useNavBarHeight } from '@/utils/hooks/useNavBarHeight';
 import { client } from '@/queries/index';
 import { onMounted, ref } from 'vue';
-import { TGym } from '@/server/router/zods/gym';
 import Taro from '@tarojs/taro';
+import { TGym } from '@/server/gym/gym';
 
-const gymData = ref<TGym | null>(null);
+const gymData = ref<TGym | undefined>(undefined);
 const getGymData = async () => {
-  gymData.value = (await client.gym.getGymDetailById.query({ id: 1 })).data;
+  gymData.value = (
+    await client.gym.getGymDetailById.query({
+      id: 1,
+      latitude: 0,
+      longitude: 0,
+    })
+  ).data;
 };
 const onPhoneCall = () => {
   Taro.makePhoneCall({
@@ -66,4 +74,9 @@ onMounted(() => {
 const { navPlaceholderHeight } = useNavBarHeight();
 </script>
 
-<style></style>
+<style>
+.gym-header {
+  @apply flex flex-col gap-2 items-stretch px-4 mb-2 bg-top bg-no-repeat bg-cover;
+  background-image: url('https://gitee.com/pidanMoe/files/raw/master/a.png');
+}
+</style>
