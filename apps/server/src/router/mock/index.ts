@@ -1,8 +1,8 @@
 import { TGym } from '../../gym/gym';
-import { TRank } from '../zods/rank';
+import { TRank } from '../../rank/rank';
 import { ROUTE_LEVEL, ROUTE_STYLE, TRoute, WALL_ANGLE } from '../zods/route';
 import { TAchievement, TUser } from '../../user/user';
-import { TWall } from '../zods/wall';
+import { TWall } from 'src/wall/wall';
 
 export const mockGym: TGym = {
   id: 1,

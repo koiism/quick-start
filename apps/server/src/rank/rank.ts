@@ -1,6 +1,6 @@
+import { createZListResponse, createZResponse } from 'src/router/zods/common';
+import { zUser } from 'src/user/user';
 import { z } from 'zod';
-import { createZListResponse, createZResponse } from './common';
-import { zUser } from '../../user/user';
 
 enum RANK_TYPE {
   EXP,
@@ -9,7 +9,6 @@ const zRankType = z.nativeEnum(RANK_TYPE);
 
 enum RANK_TIME_DIMENSION {
   DAY,
-  WEEK,
   MONTH,
   YEAR,
   ALL,
@@ -25,6 +24,7 @@ type TRankProperties = z.infer<typeof zRankProperties>;
 const zRank = z.object({
   user: zUser,
   exp: z.number(),
+  rank: z.number()
 });
 type TRank = z.infer<typeof zRank>;
 

@@ -52,7 +52,7 @@ export class GymService {
     async getNearbyGymList(longitude: number, latitude: number, offset: number, limit: number): Promise<TGym[]> {
         const gyms = await this.gymRepository.createQueryBuilder("gym")
             .select("gym")
-            .addSelect("ROUND(ST_Distance_Sphere(POINT(gym.longitude, gym.latitude), POINT(:longitude, :latitude) ) / 1000, 2) as distance", "distance")
+            .addSelect("ROUND(ST_Distance_Sphere(POINT(gym.longitude, gym.latitude), POINT(:longitude, :latitude) ) / 1000, 2)", "distance")
             .setParameters({ longitude: longitude, latitude: latitude })
             .orderBy("distance")
             .offset(offset)

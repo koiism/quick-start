@@ -7,6 +7,6 @@ export class Wall extends Base {
     name: string;
     @Column({ type: "varchar", name: "img_url" })
     img: string;
-    @Column({ type: "varchar", name: "gym_id" })
+    @Column({ type: "bigint", name: "gym_id" })
     gymId: number;
 }

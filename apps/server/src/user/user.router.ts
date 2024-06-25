@@ -25,13 +25,6 @@ const login = procedure.input(zLogin).query<TUserResponse>(async ({ ctx, input }
 
 });
 
-function getUserId(ctx): number {
-  if (!ctx.req.headers["mie-mie-shi-zhu-cheng"]?.length) {
-    return Number.NaN;
-  }
-  return Number(ctx.req.headers["mie-mie-shi-zhu-cheng"]);
-}
-
 //  获取用户头像用户名信息
 const getUserInfo = procedure.query<TUserResponse>(async ({ ctx }) => {
   const userId = getUserId(ctx);

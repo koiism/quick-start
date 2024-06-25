@@ -110,3 +110,15 @@ CREATE TABLE `favorite` (
     `deleted_at` timestamp DEFAULT NULL,
     PRIMARY KEY (`id`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏表';
+
+#经验表
+CREATE TABLE `exp` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `user_id` BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户id',
+    `exp` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '经验值',
+    `source` TINYINT NOT NULL DEFAULT 0 COMMENT '经验来源, 0-完攀, 1-beta, 2-线路',
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at` timestamp NOTNULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted_at` timestamp DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='经验表'; 

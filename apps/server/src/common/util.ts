@@ -39,3 +39,10 @@ function calDistance(lat1, lon1, lat2, lon2: number, unit: string): string {
     }
     return distance.toFixed(2) + unit;
 }
+
+function getUserId(ctx): number {
+    if (!ctx.req.headers["mie-mie-shi-zhu-cheng"]?.length) {
+        return Number.NaN;
+    }
+    return Number(ctx.req.headers["mie-mie-shi-zhu-cheng"]);
+}
