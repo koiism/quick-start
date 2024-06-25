@@ -6,6 +6,7 @@ import { appRouter } from './router';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './user/user.module';
 import { GymsModule } from './gym/gym.module';
+import { WallsModule } from './wall/wall.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { GymsModule } from './gym/gym.module';
     }),
     UsersModule,
     GymsModule,
+    WallsModule
   ],
   controllers: [AppController],
   providers: [AppService],

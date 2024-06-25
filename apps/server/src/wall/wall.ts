@@ -1,10 +1,10 @@
+import { createZListResponse, createZResponse } from 'src/router/zods/common';
 import { z } from 'zod';
-import { createZListResponse, createZResponse } from './common';
 
 const zWall = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string(),
-  gymId: z.string(),
+  gymId: z.number(),
   img: z.string(),
 });
 type TWall = z.infer<typeof zWall>;

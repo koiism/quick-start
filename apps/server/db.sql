@@ -38,6 +38,7 @@ CREATE TABLE `wall` (
     `updated_at` timestamp NOTNULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at` timestamp DEFAULT NULL,
     PRIMARY KEY (`id`),
+    KEY `idx_gym_id` (`gym_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岩壁表';
 
 #线路表
