@@ -5,9 +5,10 @@ const zGym = z.object({
   id: z.number(),
   name: z.string(),
   location: zLocation,
+  businessHour: z.string(),
   phone: z.string(),
   distance: z.string(),
-  boulderNum: z.number(),
+  boulderNum: z.number().optional(),
 });
 type TGym = z.infer<typeof zGym>;
 

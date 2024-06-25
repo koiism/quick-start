@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { tRPCModule } from '@libs/trpc';
 import { appRouter } from './router';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user/user.entity';
 import { UsersModule } from './user/user.module';
 import { GymsModule } from './gym/gym.module';
 

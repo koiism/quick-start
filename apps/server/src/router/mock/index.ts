@@ -12,6 +12,7 @@ export const mockGym: TGym = {
     latitude: 1,
     longitude: 1,
   },
+  businessHour: "10:00~19:00",
   phone: '17726062961',
   distance: '837m',
   boulderNum: 12,
