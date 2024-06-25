@@ -6,6 +6,7 @@ const zGym = z.object({
   name: z.string(),
   location: zLocation,
   phone: z.string(),
+  businessHour: z.string(),
   distance: z.string(),
   boulderNum: z.number(),
 });
