@@ -9,14 +9,39 @@ import { RankService } from './rank.service';
 const getRankList = procedure
   .input(zRankProperties.merge(zPagination))
   .query<TRankListResponse>(async ({ input, ctx }) => {
-    input;
-    ctx;
-    return {
-      data: [mockRank],
-      total: 1,
-      code: 0,
-      message: 'ok',
-    };
+    try {
+      if (input.type === RANK_TYPE.EXP) {
+        const rankService = await ctx.get(RankService);
+        const total = await rankService.getExpTotal(input.timeDimension);
+        if (!total) {
+          return {
+            code: ERROR_CODE.SUCCESS,
+            message: ERROR_MESSAGE.SUCCESS,
+            total: 0,
+          };
+        }
+        const ranks = await rankService.getExpRankList(input.offset, input.size, input.timeDimension);
+        return {
+          data: ranks,
+          total,
+          code: ERROR_CODE.SUCCESS,
+          message: ERROR_MESSAGE.SUCCESS,
+        };
+
+      } else {
+        return {
+          code: ERROR_CODE.FAIL_REQUEST_ERROR,
+          message: ERROR_MESSAGE.FAIL_REQUEST_ERROR,
+        };
+      }
+
+    } catch (error) {
+      Logger.error("get rank list fail, type:${input.type}, timeDimension:${input.timeDimension}, offset:${input.offset}, size:${input.size}", error);
+      return {
+        code: ERROR_CODE.FAIL_SYSTEM_ERROR,
+        message: ERROR_MESSAGE.FAIL_SYSTEM_ERROR,
+      };
+    }
   });
 
 // 获取当前用户排行信息
@@ -54,7 +79,7 @@ const getUserRankById = procedure
         };
       }
     } catch (error) {
-      Logger.error("get user rank by id failed, user id=", userId, error)
+      Logger.error("get user rank by id failed, user id:${userId}", error)
       return {
         code: ERROR_CODE.FAIL_SYSTEM_ERROR,
         message: ERROR_MESSAGE.FAIL_SYSTEM_ERROR,

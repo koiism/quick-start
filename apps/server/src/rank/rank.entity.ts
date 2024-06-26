@@ -6,7 +6,7 @@ export class Rank extends Base {
     @Column({ type: "bigint", name: "user_id" })
     userId: number;
     @Column({ type: "int", name: "exp" })
-    score: number;
+    exp: number;
     @Column({ type: "int", name: "source" })
     source: number;
 }

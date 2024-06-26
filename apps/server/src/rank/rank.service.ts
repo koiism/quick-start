@@ -4,6 +4,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, SelectQueryBuilder } from "typeorm";
 import { RANK_TIME_DIMENSION, TRank } from "./rank";
 import { UserService } from "src/user/user.service";
+import * as _ from "lodash";
+import { skip } from "node:test";
 
 @Injectable()
 export class RankService {
@@ -11,6 +13,34 @@ export class RankService {
         @InjectRepository(Rank) private readonly gymRepository: Repository<Rank>,
         @Inject(forwardRef(() => UserService)) private readonly userService: UserService
     ) { }
+
+    async getExpTotal(timeDimension: RANK_TIME_DIMENSION): Promise<number> {
+        return this.getWhereByTimeDimension(this.gymRepository.createQueryBuilder("rank"), timeDimension).getCount();
+    }
+
+
+    async getExpRankList(offset: number, limit: number, timeDimension: RANK_TIME_DIMENSION): Promise<TRank[]> {
+        const userRanks = await this.getWhereByTimeDimension(this.gymRepository.createQueryBuilder("rank")
+            .select("userId")
+            .addSelect("SUM(rank.exp)", "exp")
+            .addSelect("DENSE_RANK() OVER(ORDER BY exp DESC)", "userRank"), timeDimension)
+            .limit(limit)
+            .offset(offset)
+            .getRawMany();
+        if (!userRanks) {
+            return [];
+        }
+        const userInfoList = await this.userService.getUserInfoList(userRanks.map(obj => obj.userId));
+        const userInfoMap = _.keyBy(userInfoList, "id")
+        return userRanks.map(obj => {
+            const user = userInfoMap[obj.userId];
+            return {
+                user,
+                rank: obj.userRank,
+                exp: obj.exp,
+            }
+        }).filter(obj => !obj.user);
+    }
 
 
     /**
@@ -23,11 +53,12 @@ export class RankService {
         if (!user) {
             return null;
         }
-        const userRank = await this.getWhereByTimeDimension(this.gymRepository.createQueryBuilder("rank")
-            .select("id")
+        const userRanks = await this.getWhereByTimeDimension(this.gymRepository.createQueryBuilder("rank")
+            .select("userId")
             .addSelect("SUM(rank.exp)", "exp")
             .addSelect("DENSE_RANK() OVER(ORDER BY exp DESC)", "userRank"), timeDimension)
-            .getRawOne();
+            .getRawMany();
+        const userRank = userRanks.find(item => item.userId === id);
 
         if (!userRank) {
             return {

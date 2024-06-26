@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { zUser } from '../../user/user';
 import { createZResponse, createZListResponse } from './common';
-import { zWall } from './wall';
+import { zWall } from 'src/wall/wall';
 
 enum ROUTE_LEVEL {
   V0,
@@ -58,7 +58,7 @@ const zRouteBase = z.object({
   hold: z.array(z.object({
     x: z.number(),
     y: z.number(),
-    radius: z.number(),
+    size: z.number(),
     type: zHoldType,
   }))
 });

@@ -1,13 +1,12 @@
 import { procedure, router } from '@libs/trpc';
 import { TAchievementResponse, TUserResponse, zLogin } from './user';
-import { mockAchievement, mockUser } from '../router/mock';
+import { mockAchievement } from '../router/mock';
 import { ERROR_CODE, ERROR_MESSAGE } from '../router/zods/common';
 import { UserService } from './user.service';
 import { Logger } from '@nestjs/common';
 
 //  传入微信小程序code, 返回用户id
 const login = procedure.input(zLogin).query<TUserResponse>(async ({ ctx, input }) => {
-<<<<<<< HEAD
   try {
     const userService = await ctx.get(UserService);
     const user = await userService.login(input.code);
@@ -22,20 +21,6 @@ const login = procedure.input(zLogin).query<TUserResponse>(async ({ ctx, input }
       code: ERROR_CODE.FAIL_SYSTEM_ERROR,
       message: ERROR_MESSAGE.FAIL_SYSTEM_ERROR,
     };
-=======
-  // const userService = await ctx.get(UserService);
-  // const user = await userService.login(input.code);
-  return {
-    code: ERROR_CODE.SUCCESS,
-    message: ERROR_MESSAGE.SUCCESS,
-    data: mockUser,
-  };
-});
-
-function getUserId(ctx): number {
-  if (!ctx.req.headers["mie-mie-shi-zhu-cheng"]?.length) {
-    return Number.NaN;
->>>>>>> boulder-book
   }
 
 });
@@ -49,13 +34,7 @@ const getUserInfo = procedure.query<TUserResponse>(async ({ ctx }) => {
       message: ERROR_MESSAGE.FAIL_REQUEST_ERROR,
     };
   }
-  return {
-    code: ERROR_CODE.SUCCESS,
-    message: ERROR_MESSAGE.SUCCESS,
-    data: mockUser,
-  };
 
-<<<<<<< HEAD
   try {
     const userService = await ctx.get(UserService);
     const user = await userService.getUserInfo(userId);
@@ -78,30 +57,6 @@ const getUserInfo = procedure.query<TUserResponse>(async ({ ctx }) => {
       message: ERROR_MESSAGE.FAIL_SYSTEM_ERROR,
     };
   }
-=======
-  // try {
-  //   const userService = await ctx.get(UserService);
-  //   const user = await userService.getUserInfo(userId);
-  //   if (user) {
-  //     return {
-  //       code: ERROR_CODE.SUCCESS,
-  //       message: ERROR_MESSAGE.SUCCESS,
-  //       data: user,
-  //     };
-  //   } else {
-  //     return {
-  //       code: ERROR_CODE.FAIL_INTERNAL_ERROR,
-  //       message: ERROR_MESSAGE.FAIL_INTERNAL_ERROR,
-  //     };
-  //   }
-  // } catch (error) {
-  //   Logger.error("get user info failed, user id=", userId, error)
-  //   return {
-  //     code: ERROR_CODE.FAIL_INTERNAL_ERROR,
-  //     message: ERROR_MESSAGE.FAIL_INTERNAL_ERROR,
-  //   };
-  // }
->>>>>>> boulder-book
 });
 
 //  获取用户的成就信息

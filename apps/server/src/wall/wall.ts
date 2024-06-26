@@ -2,7 +2,7 @@ import { createZListResponse, createZResponse } from 'src/router/zods/common';
 import { z } from 'zod';
 
 const zWall = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   name: z.string(),
   gymId: z.number(),
   img: z.string(),
