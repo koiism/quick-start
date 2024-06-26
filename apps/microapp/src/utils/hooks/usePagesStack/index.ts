@@ -1,7 +1,15 @@
-import Taro from '@tarojs/taro';
+import { computed } from 'vue';
 
 export const usePagesStack = () => {
-  const pagesStack = Taro.getCurrentPages();
-  const notFirstPage = pagesStack.length > 1;
-  return { notFirstPage };
+  const [stackLength, { pageInstance }] = usePage();
+  const notFirstPage = stackLength > 1;
+  const isIndex = computed(() => {
+    return pageInstance.router?.path === '/pages/index/index';
+  });
+
+  const currentPagePath = computed(() => {
+    return pageInstance.router?.path;
+  });
+
+  return { notFirstPage, isIndex, currentPagePath };
 };

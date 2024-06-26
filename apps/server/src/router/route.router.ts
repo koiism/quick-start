@@ -1,6 +1,6 @@
 import { procedure, router } from '@libs/trpc';
 import { zId, zPagination } from './zods/common';
-import { TRouteListResponse, TRouteResponse, zRoute } from './zods/route';
+import { TRouteListResponse, TRouteResponse, zRouteRequest } from './zods/route';
 import { mockRoute } from './mock';
 
 // 获取岩馆7天内最受欢迎的线路
@@ -33,7 +33,7 @@ const getRoutesOfGym = procedure
 
 // 新增线路
 const createNewRoute = procedure
-  .input(zRoute)
+  .input(zRouteRequest)
   .mutation<TRouteResponse>(async ({ input, ctx }) => {
     input;
     ctx;

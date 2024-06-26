@@ -10,7 +10,35 @@
     "compileHotReLoad": false,
     "postcss": false,
     "bigPackageSizeSupport": true,
-    "minified": false
+    "minified": false,
+    "skylineRenderEnable": true
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "岩馆",
+          "pathName": "pages/index/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "成就",
+          "pathName": "pages/achievement/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "我的",
+          "pathName": "pages/my/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
   },
   "compileType": "miniprogram"
 }

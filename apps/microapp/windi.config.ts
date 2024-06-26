@@ -15,6 +15,7 @@ export default defineConfig({
         icon: 'var(--icon-color)',
         'icon-active': 'var(--icon-color-active)',
         'card-bg': 'var(--card-bg)',
+        'primary-text': 'var(--primary-text)',
       },
     },
   },
