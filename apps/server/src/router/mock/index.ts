@@ -15,15 +15,17 @@ export const mockGym: TGym = {
   phone: '17726062961',
   distance: '837m',
   boulderNum: 12,
+  businessHour: '09:00-18:00',
 };
 
 export const mockRoute: TRoute = {
   id: 1,
   name: 'mock route',
-  description: '',
   gymId: 1,
   routeLevel: ROUTE_LEVEL.V0,
   finishNum: 9,
+  hold: [],
+  favoriteNum: 0,
   creator: {
     id: 1,
     userName: 'mock creator',
@@ -31,6 +33,12 @@ export const mockRoute: TRoute = {
   },
   wallAngle: WALL_ANGLE.ROOF,
   style: [ROUTE_STYLE.DYNO],
+  wall: {
+    id: 1,
+    name: 'mock wall',
+    gymId: 1,
+    img: 'https://avatars.githubusercontent.com/u/100000000?v=4',
+  },
 };
 
 export const mockUser: TUser = {
@@ -51,9 +59,9 @@ export const mockAchievement: TAchievement = {
 };
 
 export const mockWall: TWall = {
-  id: '1',
+  id: 1,
   name: 'mock wall',
-  gymId: '1',
+  gymId: 1,
   img: 'https://avatars.githubusercontent.com/u/100000000?v=4',
 };
 
