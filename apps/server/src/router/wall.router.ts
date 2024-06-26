@@ -17,6 +17,20 @@ const getWallsByGymId = procedure
     };
   });
 
+// 根据id获取岩壁信息
+const getWallById = procedure
+  .input(zId)
+  .query<TWallResponse>(async ({ input, ctx }) => {
+    input;
+    ctx;
+    return {
+      data: mockWall,
+      total: 1,
+      code: 0,
+      message: 'ok',
+    };
+  });
+
 // 获取当前岩馆的所有岩壁
 const createNewWall = procedure
   .input(zWall)
@@ -34,6 +48,7 @@ const createNewWall = procedure
 export const WallRouter = router({
   wall: router({
     getWallsByGymId,
+    getWallById,
     createNewWall,
   }),
 });

@@ -4,6 +4,12 @@ import { ROUTE_LEVEL, ROUTE_STYLE, TRoute, WALL_ANGLE } from '../zods/route';
 import { TAchievement, TUser } from '../../user/user';
 import { TWall } from '../zods/wall';
 
+export const mockWall: TWall = {
+  id: 1,
+  name: 'mock wall',
+  gymId: 1,
+  img: 'https://gitee.com/pidanMoe/files/raw/3153d1f9f199be70f3734653afd6f262d6cd3f81/d15d61782b34515b779e4f2421801e31.png',
+};
 export const mockGym: TGym = {
   id: 1,
   name: 'mock gym',
@@ -33,12 +39,7 @@ export const mockRoute: TRoute = {
   },
   wallAngle: WALL_ANGLE.ROOF,
   style: [ROUTE_STYLE.DYNO],
-  wall: {
-    id: 1,
-    name: 'mock wall',
-    gymId: 1,
-    img: 'https://avatars.githubusercontent.com/u/100000000?v=4',
-  },
+  wall: mockWall,
 };
 
 export const mockUser: TUser = {
@@ -56,13 +57,6 @@ export const mockAchievement: TAchievement = {
   topLevelBoulder: ROUTE_LEVEL.V0,
   setNum: 1,
   topLevelSet: ROUTE_LEVEL.V0,
-};
-
-export const mockWall: TWall = {
-  id: 1,
-  name: 'mock wall',
-  gymId: 1,
-  img: 'https://avatars.githubusercontent.com/u/100000000?v=4',
 };
 
 export const mockRank: TRank = {
