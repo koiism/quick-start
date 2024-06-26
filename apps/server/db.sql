@@ -100,16 +100,15 @@ CREATE TABLE `beta` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='beta表';
 
 #收藏表
-CREATE TABLE `favorite` (
+CREATE TABLE `favorite_route` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户id',
-    `favorite_id` BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '线路id',
-    `favorite_type` TINYINT NOT NULL DEFAULT 0 COMMENT '收藏类型, 0-线路, 1-岩馆',
+    `route_id` BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '线路id',
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at` timestamp NOTNULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at` timestamp DEFAULT NULL,
     PRIMARY KEY (`id`),
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='线路收藏表';
 
 #经验表
 CREATE TABLE `exp` (
