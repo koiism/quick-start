@@ -2,25 +2,27 @@ import { procedure, router } from '@libs/trpc';
 import { TAchievementResponse, TUserResponse, zLogin } from './user';
 import { mockAchievement, mockUser } from '../router/mock';
 import { ERROR_CODE, ERROR_MESSAGE } from '../router/zods/common';
-import { UserService } from './user.service';
-import { Logger } from '@nestjs/common';
 
 //  传入微信小程序code, 返回用户id
-const login = procedure.input(zLogin).query<TUserResponse>(async ({ ctx, input }) => {
-  // const userService = await ctx.get(UserService);
-  // const user = await userService.login(input.code);
-  return {
-    code: ERROR_CODE.SUCCESS,
-    message: ERROR_MESSAGE.SUCCESS,
-    data: mockUser,
-  };
-});
+const login = procedure
+  .input(zLogin)
+  .query<TUserResponse>(async ({ ctx, input }) => {
+    ctx;
+    input;
+    // const userService = await ctx.get(UserService);
+    // const user = await userService.login(input.code);
+    return {
+      code: ERROR_CODE.SUCCESS,
+      message: ERROR_MESSAGE.SUCCESS,
+      data: mockUser,
+    };
+  });
 
 function getUserId(ctx): number {
-  if (!ctx.req.headers["mie-mie-shi-zhu-cheng"]?.length) {
+  if (!ctx.req.headers['mie-mie-shi-zhu-cheng']?.length) {
     return Number.NaN;
   }
-  return Number(ctx.req.headers["mie-mie-shi-zhu-cheng"]);
+  return Number(ctx.req.headers['mie-mie-shi-zhu-cheng']);
 }
 
 //  通过Header获取用户头像用户名信息

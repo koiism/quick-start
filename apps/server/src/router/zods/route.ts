@@ -47,6 +47,13 @@ const zRouteStyle = z.nativeEnum(ROUTE_STYLE);
 
 const zHoldType = z.nativeEnum(HOLD_TYPE);
 
+const zHold = z.object({
+  x: z.number(),
+  y: z.number(),
+  size: z.number(),
+  type: zHoldType,
+});
+type THold = z.infer<typeof zHold>;
 
 const zRouteBase = z.object({
   id: z.number(),
@@ -55,25 +62,24 @@ const zRouteBase = z.object({
   wallAngle: zWallAngle,
   style: z.array(zRouteStyle),
   routeLevel: zRouteLevel,
-  hold: z.array(z.object({
-    x: z.number(),
-    y: z.number(),
-    radius: z.number(),
-    type: zHoldType,
-  }))
+  hold: z.array(zHold),
 });
 
-const zRouteResult = zRouteBase.merge(z.object({
-  favoriteNum: z.number(),
-  finishNum: z.number(),
-  creator: zUser,
-  wall: zWall,
-}));
+const zRouteResult = zRouteBase.merge(
+  z.object({
+    favoriteNum: z.number(),
+    finishNum: z.number(),
+    creator: zUser,
+    wall: zWall,
+  }),
+);
 
-const zRouteRequest = zRouteBase.merge(z.object({
-  wallId: z.number(),
-  creatorId: z.number()
-}));
+const zRouteRequest = zRouteBase.merge(
+  z.object({
+    wallId: z.number(),
+    creatorId: z.number(),
+  }),
+);
 
 type TRouteRequest = z.infer<typeof zRouteRequest>;
 type TRoute = z.infer<typeof zRouteResult>;
@@ -96,6 +102,13 @@ export {
   zRouteResult,
   zRouteResponse,
   zRouteListResponse,
+  zHold,
 };
 
-export type { TRoute, TRouteRequest, TRouteResponse, TRouteListResponse };
+export type {
+  TRoute,
+  TRouteRequest,
+  TRouteResponse,
+  TRouteListResponse,
+  THold,
+};
