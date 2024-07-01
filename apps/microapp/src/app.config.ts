@@ -1,5 +1,10 @@
 export default defineAppConfig({
-  pages: ['pages/index/index', 'pages/achievement/index', 'pages/my/index'],
+  pages: [
+    'pages/index/index',
+    'pages/achievement/index',
+    'pages/my/index',
+    'pages/routeEdit/index',
+  ],
   window: {
     navigationBarTextStyle: '@navTxtStyle',
     navigationBarBackgroundColor: '@navBgColor',

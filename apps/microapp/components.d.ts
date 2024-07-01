@@ -7,6 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CustomRadio: typeof import('./src/components/general/CustomRadio/CustomRadio.vue')['default']
+    CustomRadioGroup: typeof import('./src/components/general/CustomRadioGroup/CustomRadioGroup.vue')['default']
     CustomTabPane: typeof import('./src/components/general/CustomTabPane/CustomTabPane.vue')['default']
     CustomTabs: typeof import('./src/components/general/CustomTabs/CustomTabs.vue')['default']
     NavBar: typeof import('./src/components/general/NavBar/NavBar.vue')['default']

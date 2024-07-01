@@ -35,7 +35,7 @@ enum ROUTE_STYLE {
 
 enum HOLD_TYPE {
   START_END,
-  HAND,
+  MIDDLE,
   FOOT,
 }
 

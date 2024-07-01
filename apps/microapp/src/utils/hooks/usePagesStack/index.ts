@@ -8,7 +8,8 @@ export const usePagesStack = () => {
   });
 
   const currentPagePath = computed(() => {
-    return pageInstance.router?.path;
+    const path = pageInstance.router?.path;
+    return path;
   });
 
   return { notFirstPage, isIndex, currentPagePath };

@@ -42,6 +42,22 @@ const config = {
   },
   mini: {
     webpackChain(chain) {
+      chain.merge({
+        module: {
+          rule: {
+            serverScript: {
+              test: /\.tsx?$/,
+              include: [path.resolve(__dirname, '../..', 'server/src')], // 仅对特定的alias目录生效
+              use: [
+                {
+                  loader: 'ts-loader',
+                },
+              ],
+              exclude: /node_modules/,
+            },
+          },
+        },
+      });
       chain.plugin('unplugin-vue-components').use(
         Components({
           resolvers: [
@@ -112,6 +128,7 @@ const config = {
     '@/pages': path.resolve(__dirname, '..', 'src/pages'),
     '@/queries': path.resolve(__dirname, '..', 'src/queries'),
     '@/stores': path.resolve(__dirname, '..', 'src/stores'),
+    '@/server': path.resolve(__dirname, '../..', 'server/src'),
   },
 };
 

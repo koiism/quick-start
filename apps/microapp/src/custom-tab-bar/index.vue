@@ -4,11 +4,11 @@
       class="tab-bar-item"
       v-for="item of list"
       :key="item.iconClass"
-      :class="{ active: currentPagePath === item.pagePath }"
+      :class="{ active: selectedPagePath === item.pagePath }"
       @click="tabSwitch(item.pagePath)"
     >
-      <view class="tab-bar-item-icon" :class="{ [item.iconClass]: true }" />
-      <view class="tab-bar-item-name">
+      <view class="icon" :class="{ [item.iconClass]: true }" />
+      <view class="name">
         {{ item.text }}
       </view>
     </view>
@@ -16,13 +16,14 @@
 </template>
 
 <script setup lang="ts">
-import { usePagesStack } from '@/utils/hooks/usePagesStack';
-import Taro from '@tarojs/taro';
+import { useTabBarStore } from '@/stores/tabBar';
+import { storeToRefs } from 'pinia';
 
-const { currentPagePath } = usePagesStack();
+const { selectedPagePath } = storeToRefs(useTabBarStore());
+const switchTab = useTabBarStore().switchTab;
 
-function tabSwitch(url: string) {
-  Taro.switchTab({ url });
+async function tabSwitch(url: string) {
+  switchTab(url);
 }
 
 const list = [
@@ -47,10 +48,10 @@ const list = [
 <style lang="scss">
 .tab-bar {
   @apply flex items-center justify-between bg-nav-bg px-7 py-2 text-icon;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
   &-item {
     @apply flex flex-col items-center;
-    &-icon {
+    .icon {
       @apply w-6 h-6 bg-center bg-no-repeat bg-contain;
       &.gym {
         background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4gICA8cGF0aCBkPSJNMjEgMjBDMjEgMjAuMjY1MiAyMC44OTQ2IDIwLjUxOTYgMjAuNzA3MSAyMC43MDcxQzIwLjUxOTYgMjAuODk0NiAyMC4yNjUyIDIxIDIwIDIxSDRDMy43MzQ3OCAyMSAzLjQ4MDQzIDIwLjg5NDYgMy4yOTI4OSAyMC43MDcxQzMuMTA1MzYgMjAuNTE5NiAzIDIwLjI2NTIgMyAyMFY5LjQ4OTk5QzIuOTk5ODkgOS4zMzc2IDMuMDM0NjIgOS4xODcyMSAzLjEwMTUyIDkuMDUwMjlDMy4xNjg0MSA4LjkxMzM3IDMuMjY1NzIgOC43OTM1NiAzLjM4NiA4LjY5OTk5TDExLjM4NiAyLjQ3Njk5QzExLjU2MTUgMi4zNDA0NCAxMS43Nzc2IDIuMjY2MyAxMiAyLjI2NjNDMTIuMjIyNCAyLjI2NjMgMTIuNDM4NSAyLjM0MDQ0IDEyLjYxNCAyLjQ3Njk5TDIwLjYxNCA4LjY5OTk5QzIwLjczNDMgOC43OTM1NiAyMC44MzE2IDguOTEzMzcgMjAuODk4NSA5LjA1MDI5QzIwLjk2NTQgOS4xODcyMSAyMS4wMDAxIDkuMzM3NiAyMSA5LjQ4OTk5VjIwWk0xOSAxOVY5Ljk3Nzk5TDEyIDQuNTMzOTlMNSA5Ljk3Nzk5VjE5SDE5Wk03IDE1SDE3VjE3SDdWMTVaIiBmaWxsPSIjOTc5Nzk3Ii8+IDwvc3ZnPg==');

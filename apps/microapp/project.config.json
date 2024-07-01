@@ -36,6 +36,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "线路编辑器",
+          "pathName": "pages/routeEdit/index",
+          "query": "wallId=1",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

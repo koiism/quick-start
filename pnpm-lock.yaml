@@ -46,7 +46,7 @@ importers:
         version: 2.0.11
       '@tarojs/components':
         specifier: 3.6.30
-        version: 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+        version: 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/helper':
         specifier: 3.6.30
         version: 3.6.30
@@ -61,7 +61,7 @@ importers:
         version: 3.6.30(@tarojs/components@3.6.30)(@tarojs/taro@3.6.30)
       '@tarojs/plugin-platform-h5':
         specifier: 3.6.30
-        version: 3.6.30(@tarojs/helper@3.6.30)(@tarojs/taro@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+        version: 3.6.30(@tarojs/helper@3.6.30)(@tarojs/taro@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/plugin-platform-jd':
         specifier: 3.6.30
         version: 3.6.30(@tarojs/taro@3.6.30)
@@ -89,6 +89,9 @@ importers:
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
+      immer:
+        specifier: ^10.1.1
+        version: 10.1.1
       miniprogram-blob:
         specifier: ^2.0.0
         version: 2.0.0
@@ -107,6 +110,15 @@ importers:
       web-streams-polyfill:
         specifier: ^4.0.0
         version: 4.0.0
+      zundo:
+        specifier: ^2.1.0
+        version: 2.1.0(zustand@4.5.4)
+      zustand:
+        specifier: ^4.5.4
+        version: 4.5.4(immer@10.1.1)(react@18.2.0)
+      zustand-vue:
+        specifier: 1.0.0-beta.21
+        version: 1.0.0-beta.21(vue@3.4.27)(zustand@4.5.4)
     devDependencies:
       '@babel/core':
         specifier: ^7.8.0
@@ -128,7 +140,7 @@ importers:
         version: 3.6.30(@tarojs/runtime@3.6.30)(postcss@8.4.38)(vue@3.4.27)
       '@tarojs/webpack5-runner':
         specifier: 3.6.30
-        version: 3.6.30(@babel/core@7.24.6)(@swc/core@1.3.96)(@tarojs/components@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(@vue/compiler-sfc@3.4.27)(postcss@8.4.38)(prettier@3.2.5)(typescript@4.9.5)(vue@3.4.27)(webpack@5.91.0)
+        version: 3.6.30(@babel/core@7.24.6)(@swc/core@1.3.96)(@tarojs/components@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(@vue/compiler-sfc@3.4.27)(postcss@8.4.38)(prettier@3.2.5)(react@18.2.0)(typescript@4.9.5)(vue@3.4.27)(webpack@5.91.0)
       '@types/node':
         specifier: ^18.19.33
         version: 18.19.33
@@ -171,6 +183,9 @@ importers:
       taro-plugin-fetch:
         specifier: workspace:*
         version: link:../../packages/taro-plugin-fetch
+      ts-loader:
+        specifier: ^9.4.3
+        version: 9.5.1(typescript@4.9.5)(webpack@5.91.0)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@swc/core@1.3.96)(@types/node@18.19.33)(typescript@4.9.5)
@@ -3195,7 +3210,7 @@ packages:
       - supports-color
     dev: true
 
-  /@tarojs/components-advanced@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(vue@3.4.27):
+  /@tarojs/components-advanced@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(react@18.2.0)(vue@3.4.27):
     resolution: {integrity: sha512-1ZBsXjErS6A+IWIpt7s7cGS5sIBQE1O+Eb93aWJy29C1ScQ/2hlhmI5SIKTWFtOmsbHCdc+trgoHeX+xNvXGDw==}
     peerDependencies:
       '@tarojs/runtime': ~3.6.30
@@ -3209,7 +3224,7 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.31)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.31)(react@18.2.0)(vue@3.4.27)
       '@tarojs/runtime': 3.6.30(@tarojs/shared@3.6.30)
       '@tarojs/shared': 3.6.30
       '@tarojs/taro': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(postcss@8.4.38)(vue@3.4.27)
@@ -3217,6 +3232,7 @@ packages:
       csstype: 3.1.2
       memoize-one: 6.0.0
       postcss: 8.4.31
+      react: 18.2.0
       tslib: 2.6.2
       vue: 3.4.27(typescript@4.9.5)
     transitivePeerDependencies:
@@ -3226,7 +3242,7 @@ packages:
       - '@types/webpack'
       - '@types/webpack-dev-server'
 
-  /@tarojs/components-advanced@3.6.30(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(vue@3.4.27):
+  /@tarojs/components-advanced@3.6.30(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(react@18.2.0)(vue@3.4.27):
     resolution: {integrity: sha512-1ZBsXjErS6A+IWIpt7s7cGS5sIBQE1O+Eb93aWJy29C1ScQ/2hlhmI5SIKTWFtOmsbHCdc+trgoHeX+xNvXGDw==}
     peerDependencies:
       '@tarojs/runtime': ~3.6.30
@@ -3240,7 +3256,7 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.31)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.31)(react@18.2.0)(vue@3.4.27)
       '@tarojs/runtime': 3.6.30(@tarojs/shared@3.6.30)
       '@tarojs/shared': 3.6.30
       '@tarojs/taro': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(postcss@8.4.31)(vue@3.4.27)
@@ -3248,14 +3264,15 @@ packages:
       csstype: 3.1.2
       memoize-one: 6.0.0
       postcss: 8.4.31
+      react: 18.2.0
       tslib: 2.6.2
       vue: 3.4.27(typescript@4.9.5)
 
-  /@tarojs/components-react@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27):
+  /@tarojs/components-react@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27):
     resolution: {integrity: sha512-QpBQqCoFrnWVyTOPEl/iG+J5IXwj5sg8ntt0SM0Xe1GJxQR0iqj9vSoUyCLCT4/Dh35YqHKlMOF5B+j4fdbf+g==}
     dependencies:
       '@babel/runtime': 7.23.2
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/taro': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(postcss@8.4.38)(vue@3.4.27)
       classnames: 2.5.1
       swiper: 6.8.0
@@ -3273,7 +3290,7 @@ packages:
       - vue
     dev: false
 
-  /@tarojs/components@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.31)(vue@3.4.27):
+  /@tarojs/components@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.31)(react@18.2.0)(vue@3.4.27):
     resolution: {integrity: sha512-hCR/XM3UhamPqQCyh+ci5WMCaFeEiNR9RuXYj6dsOe2GD8R/EFKInNSvErdOVcjyvWMYxShreVMHxg+vT1HCfw==}
     peerDependencies:
       '@types/react': '*'
@@ -3288,7 +3305,7 @@ packages:
         optional: true
     dependencies:
       '@stencil/core': 2.22.3
-      '@tarojs/components-advanced': 3.6.30(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(vue@3.4.27)
+      '@tarojs/components-advanced': 3.6.30(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(react@18.2.0)(vue@3.4.27)
       '@tarojs/taro': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(postcss@8.4.31)(vue@3.4.27)
       classnames: 2.5.1
       hls.js: 1.5.9
@@ -3305,7 +3322,7 @@ packages:
       - postcss
       - react
 
-  /@tarojs/components@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27):
+  /@tarojs/components@3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27):
     resolution: {integrity: sha512-hCR/XM3UhamPqQCyh+ci5WMCaFeEiNR9RuXYj6dsOe2GD8R/EFKInNSvErdOVcjyvWMYxShreVMHxg+vT1HCfw==}
     peerDependencies:
       '@types/react': '*'
@@ -3320,7 +3337,7 @@ packages:
         optional: true
     dependencies:
       '@stencil/core': 2.22.3
-      '@tarojs/components-advanced': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(vue@3.4.27)
+      '@tarojs/components-advanced': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(react@18.2.0)(vue@3.4.27)
       '@tarojs/taro': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(postcss@8.4.38)(vue@3.4.27)
       classnames: 2.5.1
       hls.js: 1.5.9
@@ -3566,7 +3583,7 @@ packages:
     peerDependencies:
       '@tarojs/components': ~3.6.30
     dependencies:
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/service': 3.6.30(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)
       '@tarojs/shared': 3.6.30
     transitivePeerDependencies:
@@ -3574,11 +3591,11 @@ packages:
       - '@tarojs/taro'
       - supports-color
 
-  /@tarojs/plugin-platform-h5@3.6.30(@tarojs/helper@3.6.30)(@tarojs/taro@3.6.30)(postcss@8.4.38)(vue@3.4.27):
+  /@tarojs/plugin-platform-h5@3.6.30(@tarojs/helper@3.6.30)(@tarojs/taro@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27):
     resolution: {integrity: sha512-OSEh5jBxRGky4FMVKEK/ISQ39Wh4ng5Ww1CRvNZzXGV4On+cYBVn7xBifvvMtJHwcdFBUmZPJTyiyICuTcNcSA==}
     dependencies:
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
-      '@tarojs/components-react': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
+      '@tarojs/components-react': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/router': 3.6.30(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)
       '@tarojs/runtime': 3.6.30(@tarojs/shared@3.6.30)
       '@tarojs/service': 3.6.30(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)
@@ -3632,7 +3649,7 @@ packages:
       '@tarojs/components': ~3.6.30
       '@tarojs/shared': ~3.6.30
     dependencies:
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/service': 3.6.30(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)
       '@tarojs/shared': 3.6.30
     transitivePeerDependencies:
@@ -3646,7 +3663,7 @@ packages:
       '@tarojs/components': ~3.6.30
       '@tarojs/shared': ~3.6.30
     dependencies:
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/service': 3.6.30(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)
       '@tarojs/shared': 3.6.30
       webpack-sources: 3.2.3
@@ -3661,7 +3678,7 @@ packages:
       '@tarojs/components': ~3.6.30
       '@tarojs/shared': ~3.6.30
     dependencies:
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/service': 3.6.30(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)
       '@tarojs/shared': 3.6.30
     transitivePeerDependencies:
@@ -3828,7 +3845,7 @@ packages:
       '@tarojs/components': ~3.6.30
     dependencies:
       '@tarojs/api': 3.6.30
-      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(vue@3.4.27)
+      '@tarojs/components': 3.6.30(@tarojs/helper@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(postcss@8.4.38)(react@18.2.0)(vue@3.4.27)
       '@tarojs/router': 3.6.30(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)
       '@tarojs/runtime': 3.6.30(@tarojs/shared@3.6.30)
       '@tarojs/shared': 3.6.30
@@ -3999,7 +4016,7 @@ packages:
       - vue
     dev: true
 
-  /@tarojs/webpack5-runner@3.6.30(@babel/core@7.24.6)(@swc/core@1.3.96)(@tarojs/components@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(@vue/compiler-sfc@3.4.27)(postcss@8.4.38)(prettier@3.2.5)(typescript@4.9.5)(vue@3.4.27)(webpack@5.91.0):
+  /@tarojs/webpack5-runner@3.6.30(@babel/core@7.24.6)(@swc/core@1.3.96)(@tarojs/components@3.6.30)(@tarojs/runtime@3.6.30)(@tarojs/shared@3.6.30)(@tarojs/taro@3.6.30)(@vue/compiler-sfc@3.4.27)(postcss@8.4.38)(prettier@3.2.5)(react@18.2.0)(typescript@4.9.5)(vue@3.4.27)(webpack@5.91.0):
     resolution: {integrity: sha512-PDFeEobJAzGSQ24/EhZNn0E0bSxF5X3aYdoaQP6pZq/ivK+x+MW7modJauv4WsfO6zN0LNlGCv4RmPn6I9yyEg==}
     peerDependencies:
       '@tarojs/runtime': ~3.6.30
@@ -4065,7 +4082,7 @@ packages:
       terser-webpack-plugin: 5.3.10(@swc/core@1.3.96)(esbuild@0.19.12)(webpack@5.91.0)
       url-loader: 4.1.0(file-loader@6.0.0)(webpack@5.91.0)
       vm2: 3.9.19
-      vue-loader: 15.11.1(@vue/compiler-sfc@3.4.27)(css-loader@6.11.0)(lodash@4.17.21)(prettier@3.2.5)(webpack@5.91.0)
+      vue-loader: 15.11.1(@vue/compiler-sfc@3.4.27)(css-loader@6.11.0)(lodash@4.17.21)(prettier@3.2.5)(react@18.2.0)(webpack@5.91.0)
       webpack: 5.91.0(@swc/core@1.3.96)
       webpack-chain: 6.5.1
       webpack-dev-server: 4.11.1(webpack@5.91.0)
@@ -5229,10 +5246,10 @@ packages:
       '@vue/compiler-dom': 3.4.27
       '@vue/shared': 3.4.27
 
-  /@vue/component-compiler-utils@3.3.0(lodash@4.17.21):
+  /@vue/component-compiler-utils@3.3.0(lodash@4.17.21)(react@18.2.0):
     resolution: {integrity: sha512-97sfH2mYNU+2PzGrmK2haqffDpVASuib9/w2/noxiFi31Z54hW+q3izKQXXQZSNhtiUpAI36uSuYepeBe4wpHQ==}
     dependencies:
-      consolidate: 0.15.1(lodash@4.17.21)
+      consolidate: 0.15.1(lodash@4.17.21)(react@18.2.0)
       hash-sum: 1.0.2
       lru-cache: 4.1.5
       merge-source-map: 1.1.0
@@ -7137,7 +7154,7 @@ packages:
   /consola@2.15.3:
     resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
 
-  /consolidate@0.15.1(lodash@4.17.21):
+  /consolidate@0.15.1(lodash@4.17.21)(react@18.2.0):
     resolution: {integrity: sha512-DW46nrsMJgy9kqAbPt5rKaCr7uFtpo4mSUvLHIUbJEjm0vo+aY5QLwBUq3FK4tRnJr/X0Psc0C4jf/h+HtXSMw==}
     engines: {node: '>= 0.10.0'}
     deprecated: Please upgrade to consolidate v1.0.0+ as it has been modernized with several long-awaited fixes implemented. Maintenance is supported by Forward Email at https://forwardemail.net ; follow/watch https://github.com/ladjs/consolidate for updates and release changelog
@@ -7305,6 +7322,7 @@ packages:
     dependencies:
       bluebird: 3.7.2
       lodash: 4.17.21
+      react: 18.2.0
     dev: true
 
   /constant-case@2.0.0:
@@ -11123,6 +11141,10 @@ packages:
     dev: true
     optional: true
 
+  /immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
+    dev: false
+
   /immutable@4.3.6:
     resolution: {integrity: sha512-Ju0+lEMyzMVZarkTn/gqRpdqd5dOPaz1mCZ0SH3JV6iFw81PldE/PEB1hWVEA288HPt4WXW8O7AWxB10M+03QQ==}
 
@@ -13055,7 +13077,6 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     dependencies:
       js-tokens: 4.0.0
-    dev: true
 
   /loud-rejection@1.6.0:
     resolution: {integrity: sha512-RPNliZOFkqFumDhvYqOaNY4Uz9oJM2K9tC6JWsJJsNdhuONW4LQHRBpb0qf4pJApVffI5N39SwzWZJuEhfd7eQ==}
@@ -15520,7 +15541,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: true
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -17783,6 +17803,22 @@ packages:
       yargs-parser: 21.1.1
     dev: true
 
+  /ts-loader@9.5.1(typescript@4.9.5)(webpack@5.91.0):
+    resolution: {integrity: sha512-rNH3sK9kGZcH9dYzC7CewQm4NtxJTjSEVRJ2DyBZR7f8/wcta+iV44UPCXc5+nzDzivKtlzV6c9P4e+oFhDLYg==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      typescript: '*'
+      webpack: ^5.0.0
+    dependencies:
+      chalk: 4.1.2
+      enhanced-resolve: 5.15.0
+      micromatch: 4.0.5
+      semver: 7.5.4
+      source-map: 0.7.4
+      typescript: 4.9.5
+      webpack: 5.91.0(@swc/core@1.3.96)
+    dev: true
+
   /ts-loader@9.5.1(typescript@5.3.3)(webpack@5.91.0):
     resolution: {integrity: sha512-rNH3sK9kGZcH9dYzC7CewQm4NtxJTjSEVRJ2DyBZR7f8/wcta+iV44UPCXc5+nzDzivKtlzV6c9P4e+oFhDLYg==}
     engines: {node: '>=12.0.0'}
@@ -18542,6 +18578,14 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /use-sync-external-store@1.2.0(react@18.2.0):
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /use@3.1.1:
     resolution: {integrity: sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==}
     engines: {node: '>=0.10.0'}
@@ -18679,7 +18723,7 @@ packages:
     resolution: {integrity: sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==}
     dev: true
 
-  /vue-loader@15.11.1(@vue/compiler-sfc@3.4.27)(css-loader@6.11.0)(lodash@4.17.21)(prettier@3.2.5)(webpack@5.91.0):
+  /vue-loader@15.11.1(@vue/compiler-sfc@3.4.27)(css-loader@6.11.0)(lodash@4.17.21)(prettier@3.2.5)(react@18.2.0)(webpack@5.91.0):
     resolution: {integrity: sha512-0iw4VchYLePqJfJu9s62ACWUXeSqM30SQqlIftbYWM3C+jpPcEHKSPUZBLjSF9au4HTHQ/naF6OGnO3Q/qGR3Q==}
     peerDependencies:
       '@vue/compiler-sfc': ^3.0.8
@@ -18699,7 +18743,7 @@ packages:
         optional: true
     dependencies:
       '@vue/compiler-sfc': 3.4.27
-      '@vue/component-compiler-utils': 3.3.0(lodash@4.17.21)
+      '@vue/component-compiler-utils': 3.3.0(lodash@4.17.21)(react@18.2.0)
       css-loader: 6.11.0(webpack@5.91.0)
       hash-sum: 1.0.2
       loader-utils: 1.4.2
@@ -19458,4 +19502,42 @@ packages:
 
   /zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+    dev: false
+
+  /zundo@2.1.0(zustand@4.5.4):
+    resolution: {integrity: sha512-IMhYXDZWbyGu/p3rQb1d3orhCfAyi9hGkx6N579ZtO7mWrzvBdNyGEcxciv1jtIYPKBqLSAgzKqjLguau09f9g==}
+    peerDependencies:
+      zustand: ^4.3.0
+    dependencies:
+      zustand: 4.5.4(immer@10.1.1)(react@18.2.0)
+    dev: false
+
+  /zustand-vue@1.0.0-beta.21(vue@3.4.27)(zustand@4.5.4):
+    resolution: {integrity: sha512-TI4O67YAbkJE4nRxtoQI7NZzE4hfYDoY+YRtwoz5BnJEo8kjJax22r/vMt9lNiyq05VAAurp0fzhEWI1Nw8BmQ==}
+    peerDependencies:
+      vue: '>=2.6.0'
+      zustand: '>=4.1.4'
+    dependencies:
+      vue: 3.4.27(typescript@4.9.5)
+      zustand: 4.5.4(immer@10.1.1)(react@18.2.0)
+    dev: false
+
+  /zustand@4.5.4(immer@10.1.1)(react@18.2.0):
+    resolution: {integrity: sha512-/BPMyLKJPtFEvVL0E9E9BTUM63MNyhPGlvxk1XjrfWTUlV+BR8jufjsovHzrtR6YNcBEcL7cMHovL1n9xHawEg==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      immer: 10.1.1
+      react: 18.2.0
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false

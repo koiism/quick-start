@@ -39,7 +39,7 @@ export const useTaroRectById = (id: string) => {
 
 export const useTaroRect = (
   elementRef: (Element | Window | any) | Ref<Element | Window | any>
-): any => {
+): Promise<any> => {
   // 小程序下需要 el 具有 id 属性才能查询
   let element = unref(elementRef);
   return new Promise((resolve, reject) => {
@@ -74,7 +74,7 @@ export const useTaroRect = (
             if (rect[0]) {
               resolve(rect[0]);
             } else {
-              reject();
+              reject('did not found element');
             }
           });
       } else {

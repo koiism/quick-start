@@ -10,4 +10,10 @@ const goHome = () => {
   });
 };
 
-export { goBack, goHome };
+const goRouteEdit = () => {
+  Taro.navigateTo({
+    url: '/pages/routeEdit/index',
+  });
+};
+
+export { goBack, goHome, goRouteEdit };
