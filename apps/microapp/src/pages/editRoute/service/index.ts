@@ -46,14 +46,14 @@ export default class RouteEditorEngine {
     }
   });
   _mode: Ref<CANVAS_MODE> = ref(CANVAS_MODE.VIEW);
-  _editingTarget: {
-    target?: any;
+  _wallInfo: {
     zoomStart?: boolean;
     clickOffset?: { x: number; y: number };
     initialScale?: { _x: number; _y: number };
     initialTouchDistance?: number;
-    disableEdit?: () => void;
   } = reactive({});
+  removeListener: () => void;
+  eventDispatcher: (e) => void = this._eventDispatcher.bind(this);
   constructor(
     private canvasRef: (Element | Window | any) | Ref<Element | Window | any>
   ) {}
@@ -130,142 +130,119 @@ export default class RouteEditorEngine {
         this.wall.addChild(holdSprite);
         holds.push(holdSprite);
       });
-      this.editingTarget = holds[0];
     }
   }
+  private _eventDispatcher(e) {
+    if (e.touches.length <= 1) {
+      this.PIXI.dispatchEvent(e);
+    } else {
+      this.onZoom(e);
+    }
+  }
+
   get mode() {
     return this._mode.value;
   }
   set mode(value) {
     this._mode.value = value;
-    if (value === CANVAS_MODE.VIEW || value === CANVAS_MODE.INSERT) {
-      this.editingTarget = this.wall;
+    this.removeListener?.();
+    if (value === CANVAS_MODE.VIEW) {
+      this.listenViewMode();
     }
   }
-  get editingTarget() {
-    return this._editingTarget.target;
+  public onZoom(e) {
+    switch (this.mode) {
+      case CANVAS_MODE.VIEW:
+        this.onViewModeZoom(e);
+        break;
+    }
   }
-  set editingTarget(value) {
-    this._editingTarget.target = value;
-    this._editingTarget.disableEdit?.();
-    const that = this;
-    const onTouchStart = function (event) {
-      const localPoint = that.editingTarget.toLocal(event.data.global);
-      that._editingTarget.clickOffset = {
-        x: localPoint.x * that.editingTarget.scale.x,
-        y: localPoint.y * that.editingTarget.scale.y,
+  private listenViewMode() {
+    const onTouchStart = (event) => {
+      const localPoint = this.wall.toLocal(event.data.global);
+      this._wallInfo.clickOffset = {
+        x: localPoint.x * this.wall.scale.x,
+        y: localPoint.y * this.wall.scale.y,
       };
-      that.editingTarget.anchor.set(
-        (localPoint.x * that.editingTarget.scale.x) / that.editingTarget.width +
-          that.editingTarget.anchor._x,
-        (localPoint.y * that.editingTarget.scale.y) /
-          that.editingTarget.height +
-          that.editingTarget.anchor._y
+      this.wall.anchor.set(
+        (localPoint.x * this.wall.scale.x) / this.wall.width +
+          this.wall.anchor._x,
+        (localPoint.y * this.wall.scale.y) / this.wall.height +
+          this.wall.anchor._y
       );
-      that.editingTarget.position.copyFrom({
+      this.wall.position.copyFrom({
         x: event.global.x,
         y: event.global.y,
       });
-      that._editingTarget.initialScale = Object.assign(
-        {},
-        that.editingTarget.scale
-      );
+      this._wallInfo.initialScale = Object.assign({}, this.wall.scale);
     };
-    const onTouchMove = function (event) {
-      if (that.editingTarget && that._editingTarget.clickOffset) {
-        that.editingTarget.position.copyFrom({
+    const onTouchMove = (event) => {
+      if (this.wall && this._wallInfo.clickOffset) {
+        this.wall.position.copyFrom({
           x: event.global.x,
           y: event.global.y,
         });
-        that.schema[0].x = event.global.x;
-        that.schema[0].y = event.global.y;
       }
     };
-    const onTouchEnd = function () {
-      that._editingTarget = {
-        target: that.editingTarget,
-      };
+    const onTouchEnd = () => {
+      this._wallInfo = {};
     };
 
     this.stage.on('pointermove', onTouchMove);
     this.stage.on('pointerup', onTouchEnd);
     this.stage.on('pointerupoutside', onTouchEnd);
     this.stage.on('pointerdown', onTouchStart);
-    this._editingTarget.disableEdit = () => {
-      that.stage.off('pointermove', onTouchMove);
-      that.stage.off('pointerup', onTouchEnd);
-      that.stage.off('pointerupoutside', onTouchEnd);
-      that.stage.off('pointerdown', onTouchStart);
+    this.removeListener = () => {
+      this.stage.off('pointermove', onTouchMove);
+      this.stage.off('pointerup', onTouchEnd);
+      this.stage.off('pointerupoutside', onTouchEnd);
+      this.stage.off('pointerdown', onTouchStart);
     };
   }
-  /**
-   * 处理缩放事件。
-   * 当两个触摸点同时在屏幕上移动时，可以通过计算它们之间的距离变化来实现物体的缩放。
-   * 此函数主要用于计算并应用这种缩放变化到编辑中的目标物体上。
-   * @param e 触摸事件对象，包含触摸点的信息。
-   */
-  public onZoom = (e) => {
-    // 获取当前正在编辑的目标物体。
-    const target = this.editingTarget;
-    // 如果目标物体存在。
+  private onViewModeZoom(e) {
+    const target = this.wall;
     if (target) {
-      // 获取第一个和第二个触摸点的位置。
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      // 如果还没有开始缩放。
-      if (!this._editingTarget.zoomStart) {
-        // 计算初始触摸点间的距离，用于后续计算缩放比例。
-        this._editingTarget.initialTouchDistance = Math.hypot(
+      if (!this._wallInfo.zoomStart) {
+        this._wallInfo.initialTouchDistance = Math.hypot(
           touch1.clientX - touch2.clientX,
           touch1.clientY - touch2.clientY
         );
-        // 复制当前物体的缩放状态作为初始缩放。
-        this._editingTarget.initialScale = Object.assign({}, target.scale);
-        // 标记缩放已经开始。
-        this._editingTarget.zoomStart = true;
-        // 计算两个触摸点的中心点位置。
+        this._wallInfo.initialScale = Object.assign({}, target.scale);
+        this._wallInfo.zoomStart = true;
         const centerPoint = {
           x: (touch1.clientX + touch2.clientX) / 2,
           y: (touch1.clientY + touch2.clientY) / 2,
         };
-        // 将中心点位置转换为物体本地坐标系下的位置。
-        const localPoint = this.editingTarget.toLocal(centerPoint);
-        // 计算物体在缩放前后的点击偏移量。
-        this._editingTarget.clickOffset = {
-          x: localPoint.x * this.editingTarget.scale.x,
-          y: localPoint.y * this.editingTarget.scale.y,
+        const localPoint = this.wall.toLocal(centerPoint);
+        this._wallInfo.clickOffset = {
+          x: localPoint.x * this.wall.scale.x,
+          y: localPoint.y * this.wall.scale.y,
         };
-        // 更新物体的锚点位置，以保持其在屏幕中的相对位置不变。
-        this.editingTarget.anchor.set(
-          (localPoint.x * this.editingTarget.scale.x) /
-            this.editingTarget.width +
-            this.editingTarget.anchor._x,
-          (localPoint.y * this.editingTarget.scale.y) /
-            this.editingTarget.height +
-            this.editingTarget.anchor._y
+        this.wall.anchor.set(
+          (localPoint.x * this.wall.scale.x) / this.wall.width +
+            this.wall.anchor._x,
+          (localPoint.y * this.wall.scale.y) / this.wall.height +
+            this.wall.anchor._y
         );
-        // 设置物体的位置为触摸点的中心位置，为后续缩放提供参考点。
-        this.editingTarget.position.copyFrom({
+        this.wall.position.copyFrom({
           x: centerPoint.x,
           y: centerPoint.y,
         });
         return;
       }
-      // 计算当前触摸点间的距离。
       const currentTouchDistance = Math.hypot(
         touch2.clientX - touch1.clientX,
         touch2.clientY - touch1.clientY
       );
-      // 计算缩放比例。
       const scaleFactor =
-        currentTouchDistance / (this._editingTarget.initialTouchDistance || 1);
-      // 获取初始缩放状态。
-      const initialScale = this._editingTarget.initialScale;
-      // 根据缩放比例和初始缩放状态，更新物体的缩放。
+        currentTouchDistance / (this._wallInfo.initialTouchDistance || 1);
+      const initialScale = this._wallInfo.initialScale;
       target.scale.set(
         (initialScale?._x || 1) * scaleFactor,
         (initialScale?._y || 1) * scaleFactor
       );
     }
-  };
+  }
 }

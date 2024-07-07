@@ -66,13 +66,7 @@ watch(
 
 const engine = new RouteEditorEngine(canvasRef);
 
-const touchEvent = function (e) {
-  if (e.touches.length <= 1) {
-    engine.PIXI.dispatchEvent(e);
-  } else {
-    engine.onZoom(e);
-  }
-};
+let touchEvent = engine.eventDispatcher;
 
 onMounted(async () => {
   await engine.initWorld();
