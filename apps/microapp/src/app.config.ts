@@ -3,7 +3,7 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/achievement/index',
     'pages/my/index',
-    'pages/routeEdit/index',
+    'pages/editRoute/index',
   ],
   window: {
     navigationBarTextStyle: '@navTxtStyle',

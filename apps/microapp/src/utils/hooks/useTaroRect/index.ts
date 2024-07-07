@@ -83,3 +83,38 @@ export const useTaroRect = (
     }
   });
 };
+
+export const useTaroNode = (
+  elementRef: (Element | Window | any) | Ref<Element | Window | any>
+): Promise<any> => {
+  // 小程序下需要 el 具有 id 属性才能查询
+  let element = unref(elementRef);
+  return new Promise((resolve, reject) => {
+    if (Taro.getEnv() === Taro.ENV_TYPE.WEB) {
+      if (element && element.$el) {
+        element = element.$el;
+      }
+      if (element) {
+        resolve(element);
+      }
+      reject();
+    } else {
+      const query = Taro.createSelectorQuery();
+      const id = element?.id;
+      if (id) {
+        query
+          .select(`#${id}`)
+          .node()
+          .exec(function (rect: any) {
+            if (rect[0].node) {
+              resolve(rect[0].node);
+            } else {
+              reject('did not found element');
+            }
+          });
+      } else {
+        reject(new Error('element id is required'));
+      }
+    }
+  });
+};
