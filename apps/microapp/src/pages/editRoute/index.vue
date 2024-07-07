@@ -1,11 +1,27 @@
 <template>
-  <view class="page-container overflow-hidden">
+  <view class="page-container overflow-hidden" catchtouchmove="true">
     <nav-bar>添加线路</nav-bar>
     <view class="flex-1 w-full relative">
       <view
-        class="absolute top-3 w-full flex items-center justify-between px-4 z-100 box-border"
+        class="absolute top-3 w-full flex items-center justify-between px-4 z-100 box-border h-10"
+        catchtouchmove="true"
       >
         <view>模式: {{ engine.modeText }}</view>
+        <view
+          class="bg-card-bg rounded-full flex px-4 gap-2 h-10 items-center"
+          v-show="engine.mode === CANVAS_MODE.EDIT"
+        >
+          <svg-icon
+            type="check"
+            color="primary"
+            @click="onConfirmEdit"
+          ></svg-icon>
+          <svg-icon
+            type="delete"
+            color="red"
+            @click="engine.removeEditingHold"
+          ></svg-icon>
+        </view>
       </view>
       <canvas
         :id="worldElementId"
@@ -67,6 +83,9 @@ watch(
 const engine = new RouteEditorEngine(canvasRef);
 
 let touchEvent = engine.eventDispatcher;
+const onConfirmEdit = () => {
+  engine.restoreLastMode();
+};
 
 onMounted(async () => {
   await engine.initWorld();
