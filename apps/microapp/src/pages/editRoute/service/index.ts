@@ -54,6 +54,7 @@ export default class RouteEditorEngine {
         return '查看';
     }
   });
+  _holdSprites: any[] = [];
   _mode: Ref<CANVAS_MODE | undefined> = ref();
   _lastMode: Ref<CANVAS_MODE | undefined> = ref();
   _editSchemaIndex: Ref<number> = ref(-1);
@@ -71,6 +72,7 @@ export default class RouteEditorEngine {
   _clickOffset?: { x: number; y: number };
   _zoomStart: boolean = false;
   removeListener: () => void;
+  removeHoldListener: () => void;
   eventDispatcher: (e) => void = this._eventDispatcher.bind(this);
   constructor(
     private canvasRef: (Element | Window | any) | Ref<Element | Window | any>
@@ -118,15 +120,7 @@ export default class RouteEditorEngine {
     // 清空墙
     this.wall.removeChildren();
     if (this.schema.length) {
-      // 绘制蒙层
-      const maskSprite = new this.PIXI.Sprite(this.PIXI.Texture.WHITE);
-      maskSprite.tint = 0x000000;
-      maskSprite.width = this.wall.width / this.wall.scale.x;
-      maskSprite.height = this.wall.height / this.wall.scale.y;
-      const { x: worldX, y: worldY } = this.pointToWall({ x: 0, y: 0 });
-      maskSprite.position.set(worldX, worldY);
-      maskSprite.alpha = 0.5;
-      this.wall?.addChild(maskSprite);
+      this.drawWallMask();
       const holds: any[] = [];
       const holdStrokes: any[] = [];
       this.schema.forEach((hold, index) => {
@@ -140,24 +134,37 @@ export default class RouteEditorEngine {
       holds.forEach((holdSprite) => {
         this.wall.addChild(holdSprite);
       });
+      this._holdSprites = holds;
+      this.listenHold();
     }
   }
+  private drawWallMask() {
+    // 绘制蒙层
+    const maskSprite = new this.PIXI.Sprite(this.PIXI.Texture.WHITE);
+    maskSprite.tint = 0x000000;
+    maskSprite.width = this.wall.width / this.wall.scale.x;
+    maskSprite.height = this.wall.height / this.wall.scale.y;
+    const { x: worldX, y: worldY } = this.pointToWall({ x: 0, y: 0 });
+    maskSprite.position.set(worldX, worldY);
+    maskSprite.alpha = 0.5;
+    this.wall?.addChild(maskSprite);
+  }
   private generateHold(hold: THold, index: number) {
-    const holdSprite = this.generateHoldSprite(hold, index);
+    const holdSprite = this.generateHoldSprite(hold);
     const holdStroke = this.generateHoldStroke(hold, index);
     return {
       holdSprite,
       holdStroke,
     };
   }
-  private generateHoldSprite(hold, index) {
+  private generateHoldSprite(hold) {
     if (hold.type === HOLD_TYPE.FOOT) {
-      return this.generateSquareHoldSprite(hold, index); // 新增的方形绘制函数
+      return this.generateSquareHoldSprite(hold); // 新增的方形绘制函数
     } else {
-      return this.generateCircularHoldSprite(hold, index); // 原有的圆形绘制函数
+      return this.generateCircularHoldSprite(hold); // 原有的圆形绘制函数
     }
   }
-  private generateSquareHoldSprite(hold, index) {
+  private generateSquareHoldSprite(hold) {
     const originPoint = this.pointToWall({ x: 0, y: 0 });
     const holdSpriteMask = new this.PIXI.Graphics();
     holdSpriteMask.beginFill(0xffffff);
@@ -178,20 +185,9 @@ export default class RouteEditorEngine {
     holdSprite.mask = holdSpriteMask;
     holdSprite.addChild(holdSpriteMask);
     holdSprite.eventMode = 'static';
-    // holdSprite.interactive = true;
-    holdSprite.on('pointerdown', () => {
-      if (this.mode === CANVAS_MODE.EDIT) {
-        this._editSchemaIndex.value = index;
-      }
-    });
-    holdSprite.on('pointerup', () => {
-      if (!this._eventTap) return;
-      this.mode = CANVAS_MODE.EDIT;
-      this._editSchemaIndex.value = index;
-    });
     return holdSprite;
   }
-  private generateCircularHoldSprite(hold, index) {
+  private generateCircularHoldSprite(hold) {
     const originPoint = this.pointToWall({ x: 0, y: 0 });
     const holdSpriteMask = new this.PIXI.Graphics();
     holdSpriteMask.beginFill(0xffffff);
@@ -207,16 +203,6 @@ export default class RouteEditorEngine {
     holdSprite.mask = holdSpriteMask;
     holdSprite.addChild(holdSpriteMask);
     holdSprite.eventMode = 'static';
-    holdSprite.on('pointerdown', () => {
-      if (this.mode === CANVAS_MODE.EDIT) {
-        this._editSchemaIndex.value = index;
-      }
-    });
-    holdSprite.on('pointerup', () => {
-      if (!this._eventTap) return;
-      this.mode = CANVAS_MODE.EDIT;
-      this._editSchemaIndex.value = index;
-    });
     return holdSprite;
   }
 
@@ -373,14 +359,7 @@ export default class RouteEditorEngine {
     if (this._mode.value === value) return;
     this._lastMode.value = this._mode.value;
     this._mode.value = value;
-    this.removeListener?.();
-    if (value === CANVAS_MODE.VIEW) {
-      this.listenViewMode();
-    } else if (value === CANVAS_MODE.INSERT) {
-      this.listenInsertMode();
-    } else if (value === CANVAS_MODE.EDIT) {
-      this.listenEditMode();
-    }
+    this.listenMode();
   }
   public restoreLastMode() {
     this.mode = this._lastMode.value ?? CANVAS_MODE.VIEW;
@@ -493,6 +472,44 @@ export default class RouteEditorEngine {
     };
     return removeListener;
   }
+  private listenMode() {
+    this.removeListener?.();
+    if (this.mode === CANVAS_MODE.VIEW) {
+      this.listenViewMode();
+    } else if (this.mode === CANVAS_MODE.INSERT) {
+      this.listenInsertMode();
+    } else if (this.mode === CANVAS_MODE.EDIT) {
+      this.listenEditMode();
+    }
+  }
+  private listenHold() {
+    this.removeHoldListener?.();
+    if (this.mode === CANVAS_MODE.VIEW) {
+      this.listenViewHold();
+    } else if (this.mode === CANVAS_MODE.INSERT) {
+      this.listenInsertHold();
+    } else if (this.mode === CANVAS_MODE.EDIT) {
+      this.listenEditHold();
+    }
+  }
+  private listenViewHold() {
+    const unobserve: (() => void)[] = [];
+
+    this._holdSprites.forEach((hold, index) => {
+      const onHoldTap = () => {
+        if (!this._eventTap) return;
+        this.mode = CANVAS_MODE.EDIT;
+        this._editSchemaIndex.value = index;
+      };
+      hold.on('pointerup', onHoldTap);
+      unobserve.push(() => hold.off('pointerup', onHoldTap));
+    });
+    this.removeHoldListener = () => {
+      unobserve.forEach((fn) => {
+        fn();
+      });
+    };
+  }
   private listenViewMode() {
     const unobserve = this.wallDragObserver();
     this.removeListener = () => {
@@ -512,6 +529,24 @@ export default class RouteEditorEngine {
       );
     }
   }
+  private listenInsertHold() {
+    const unobserve: (() => void)[] = [];
+
+    this._holdSprites.forEach((hold, index) => {
+      const onHoldTap = () => {
+        if (!this._eventTap) return;
+        this.mode = CANVAS_MODE.EDIT;
+        this._editSchemaIndex.value = index;
+      };
+      hold.on('pointerup', onHoldTap);
+      unobserve.push(() => hold.off('pointerup', onHoldTap));
+    });
+    this.removeHoldListener = () => {
+      unobserve.forEach((fn) => {
+        fn();
+      });
+    };
+  }
   private listenInsertMode() {
     const unobserve = this.wallDragObserver();
     this.removeListener = () => {
@@ -530,6 +565,28 @@ export default class RouteEditorEngine {
         (initialScale?._y || 1) * scaleFactor
       );
     }
+  }
+  private listenEditHold() {
+    const unobserve: (() => void)[] = [];
+
+    this._holdSprites.forEach((hold, index) => {
+      const onHoldTouch = () => {
+        this._editSchemaIndex.value = index;
+      };
+      hold.on('pointerdown', onHoldTouch);
+      unobserve.push(() => hold.off('pointerdown', onHoldTouch));
+      const onHoldTap = () => {
+        if (!this._eventTap) return;
+        this._editSchemaIndex.value = index;
+      };
+      hold.on('pointerup', onHoldTap);
+      unobserve.push(() => hold.off('pointerup', onHoldTap));
+    });
+    this.removeHoldListener = () => {
+      unobserve.forEach((fn) => {
+        fn();
+      });
+    };
   }
   private listenEditMode() {
     const onTouchStart = () => {};
