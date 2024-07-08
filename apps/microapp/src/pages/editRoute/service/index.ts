@@ -11,6 +11,12 @@ export enum CANVAS_MODE {
   EDIT,
 }
 
+export const holdColorMap = {
+  [HOLD_TYPE.START_END]: 0xfde68a,
+  [HOLD_TYPE.MIDDLE]: 0xa5f3fc,
+  [HOLD_TYPE.FOOT]: 0xa5f3fc,
+};
+
 export default class RouteEditorEngine {
   PIXI: any;
   stage: any;
@@ -97,16 +103,16 @@ export default class RouteEditorEngine {
     this.stage.addChild(wall);
     this.mode = CANVAS_MODE.VIEW;
   };
+  private pointToWall({ x, y }: { x: number; y: number }) {
+    return {
+      x: x - (this.wall.anchor._x * this.wall.width) / this.wall.scale.x,
+      y: y - (this.wall.anchor._y * this.wall.height) / this.wall.scale.y,
+    };
+  }
   private renderSchema() {
     if (!this.wall) {
       return;
     }
-    const pointToWall = ({ x, y }: { x: number; y: number }) => {
-      return {
-        x: x - (this.wall.anchor._x * this.wall.width) / this.wall.scale.x,
-        y: y - (this.wall.anchor._y * this.wall.height) / this.wall.scale.y,
-      };
-    };
     // 清空墙
     this.wall.removeChildren();
     if (this.schema.length) {
@@ -115,39 +121,223 @@ export default class RouteEditorEngine {
       maskSprite.tint = 0x000000;
       maskSprite.width = this.wall.width / this.wall.scale.x;
       maskSprite.height = this.wall.height / this.wall.scale.y;
-      const { x: worldX, y: worldY } = pointToWall({ x: 0, y: 0 });
+      const { x: worldX, y: worldY } = this.pointToWall({ x: 0, y: 0 });
       maskSprite.position.set(worldX, worldY);
       maskSprite.alpha = 0.5;
       this.wall?.addChild(maskSprite);
       // 绘制hold
 
+      const holds: any[] = [];
+      const holdStrokes: any[] = [];
       this.schema.forEach((hold, index) => {
-        const holdSpriteMask = new this.PIXI.Graphics();
-        holdSpriteMask.beginFill(0xffffff);
-        holdSpriteMask.drawCircle(hold.x, hold.y, hold.size / 2);
-        holdSpriteMask.endFill();
-        holdSpriteMask.width = hold.size;
-        holdSpriteMask.height = hold.size;
-        const holdSprite = new this.PIXI.Sprite(this.wall.texture);
-        holdSprite.width = this.wall.width / this.wall.scale.x;
-        holdSprite.height = this.wall.height / this.wall.scale.y;
-        holdSprite.position.set(worldX, worldY);
-        holdSprite.mask = holdSpriteMask;
-        holdSprite.addChild(holdSpriteMask);
-        holdSprite.eventMode = 'static';
-        holdSprite.on('pointerdown', () => {
-          if (this.mode === CANVAS_MODE.EDIT) {
-            this._editSchemaIndex.value = index;
-          }
-        });
-        holdSprite.on('pointerup', () => {
-          if (!this._eventTap) return;
-          this.mode = CANVAS_MODE.EDIT;
-          this._editSchemaIndex.value = index;
-        });
+        const { holdSprite, holdStroke } = this.generateHold(hold, index);
+        holds.push(holdSprite);
+        holdStrokes.push(holdStroke);
+      });
+      holdStrokes.forEach((holdStroke) => {
+        this.wall.addChild(holdStroke);
+      });
+      holds.forEach((holdSprite) => {
         this.wall.addChild(holdSprite);
       });
     }
+  }
+  private generateHold(hold: THold, index: number) {
+    const holdSprite = this.generateHoldSprite(hold, index);
+    const holdStroke = this.generateHoldStroke(hold, index);
+    return {
+      holdSprite,
+      holdStroke,
+    };
+  }
+  private generateHoldSprite(hold, index) {
+    if (hold.type === HOLD_TYPE.FOOT) {
+      return this.generateSquareHoldSprite(hold, index); // 新增的方形绘制函数
+    } else {
+      return this.generateCircularHoldSprite(hold, index); // 原有的圆形绘制函数
+    }
+  }
+  private generateSquareHoldSprite(hold, index) {
+    const originPoint = this.pointToWall({ x: 0, y: 0 });
+    const holdSpriteMask = new this.PIXI.Graphics();
+    holdSpriteMask.beginFill(0xffffff);
+    holdSpriteMask.drawRect(
+      hold.x - hold.size / 2,
+      hold.y - hold.size / 2,
+      hold.size,
+      hold.size
+    );
+    holdSpriteMask.endFill();
+    holdSpriteMask.width = hold.size;
+    holdSpriteMask.height = hold.size;
+
+    const holdSprite = new this.PIXI.Sprite(this.wall.texture);
+    holdSprite.width = this.wall.width / this.wall.scale.x;
+    holdSprite.height = this.wall.height / this.wall.scale.y;
+    holdSprite.position.set(originPoint.x, originPoint.y);
+    holdSprite.mask = holdSpriteMask;
+    holdSprite.addChild(holdSpriteMask);
+    holdSprite.eventMode = 'static';
+    // holdSprite.interactive = true;
+    holdSprite.on('pointerdown', () => {
+      if (this.mode === CANVAS_MODE.EDIT) {
+        this._editSchemaIndex.value = index;
+      }
+    });
+    holdSprite.on('pointerup', () => {
+      if (!this._eventTap) return;
+      this.mode = CANVAS_MODE.EDIT;
+      this._editSchemaIndex.value = index;
+    });
+    return holdSprite;
+  }
+  private generateCircularHoldSprite(hold, index) {
+    const originPoint = this.pointToWall({ x: 0, y: 0 });
+    const holdSpriteMask = new this.PIXI.Graphics();
+    holdSpriteMask.beginFill(0xffffff);
+    holdSpriteMask.drawCircle(hold.x, hold.y, hold.size / 2);
+    holdSpriteMask.endFill();
+    holdSpriteMask.width = hold.size;
+    holdSpriteMask.height = hold.size;
+
+    const holdSprite = new this.PIXI.Sprite(this.wall.texture);
+    holdSprite.width = this.wall.width / this.wall.scale.x;
+    holdSprite.height = this.wall.height / this.wall.scale.y;
+    holdSprite.position.set(originPoint.x, originPoint.y);
+    holdSprite.mask = holdSpriteMask;
+    holdSprite.addChild(holdSpriteMask);
+    holdSprite.eventMode = 'static';
+    holdSprite.on('pointerdown', () => {
+      if (this.mode === CANVAS_MODE.EDIT) {
+        this._editSchemaIndex.value = index;
+      }
+    });
+    holdSprite.on('pointerup', () => {
+      if (!this._eventTap) return;
+      this.mode = CANVAS_MODE.EDIT;
+      this._editSchemaIndex.value = index;
+    });
+    return holdSprite;
+  }
+
+  private generateHoldStroke(hold, index) {
+    if (hold.type === HOLD_TYPE.FOOT) {
+      return this.generateSquareHoldStroke(hold, index); // 新增的方形绘制函数
+    } else {
+      return this.generateCircularHoldStroke(hold, index); // 原有的圆形绘制函数
+    }
+  }
+  private generateSquareHoldStroke(hold, index) {
+    const holdPoint = this.pointToWall(hold);
+    const holdStroke = new this.PIXI.Graphics();
+    const STROKE_WIDTH = 3;
+    if (
+      this.mode === CANVAS_MODE.EDIT &&
+      index === this._editSchemaIndex.value
+    ) {
+      holdStroke.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
+      // 虚线参数：线段长度和空隙长度
+      const dashLength = 3;
+      const gapLength = 3;
+
+      // 计算正方形的边长
+      const sideLength = hold.size + STROKE_WIDTH;
+      // 绘制虚线正方形
+      holdStroke.beginFill(0x000000, 0); // 设置填充颜色为透明，确保只有边框
+      const numSegments = Math.ceil(sideLength / (dashLength + gapLength));
+      for (let i = 0; i < 4; i++) {
+        // 四条边
+        let x = holdPoint.x - sideLength / 2;
+        let y = holdPoint.y - sideLength / 2;
+        let dx = 0;
+        let dy = 0;
+        switch (i) {
+          case 0: // 上边
+            dx = 1;
+            break;
+          case 1: // 右边
+            x += sideLength;
+            dy = 1;
+            break;
+          case 2: // 下边
+            x += sideLength;
+            y += sideLength;
+            dx = -1;
+            break;
+          case 3: // 左边
+            y += sideLength;
+            dy = -1;
+            break;
+        }
+        for (let j = 0; j < numSegments; j++) {
+          holdStroke.moveTo(x, y);
+          x += dx * dashLength;
+          y += dy * dashLength;
+          holdStroke.lineTo(x, y);
+          x += dx * gapLength;
+          y += dy * gapLength;
+        }
+      }
+      holdStroke.endFill();
+    } else {
+      holdStroke.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
+      // 绘制实线正方形
+      holdStroke.drawRect(
+        holdPoint.x - (hold.size + STROKE_WIDTH) / 2,
+        holdPoint.y - (hold.size + STROKE_WIDTH) / 2,
+        hold.size + STROKE_WIDTH,
+        hold.size + STROKE_WIDTH
+      );
+    }
+    return holdStroke;
+  }
+  private generateCircularHoldStroke(hold, index) {
+    const holdPoint = this.pointToWall(hold);
+    const holdStroke = new this.PIXI.Graphics();
+    const STROKE_WIDTH = 3;
+    if (
+      this.mode === CANVAS_MODE.EDIT &&
+      index === this._editSchemaIndex.value
+    ) {
+      holdStroke.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
+      // 虚线参数：线段长度和空隙长度
+      const dashLength = 2;
+      const gapLength = 2;
+
+      // 计算圆的周长
+      const radius = (hold.size + STROKE_WIDTH) / 2;
+      const circumference = Math.PI * radius;
+
+      // 开始绘制虚线
+      let angle = 0;
+      while (angle < Math.PI * 2) {
+        // 计算线段或空隙的终点角度
+        let endAngle = angle + (dashLength / circumference) * Math.PI * 2;
+        if (endAngle > Math.PI * 2) endAngle = Math.PI * 2;
+
+        // 计算线段或空隙的起始和结束坐标
+        let startX = holdPoint.x + radius * Math.cos(angle);
+        let startY = holdPoint.y + radius * Math.sin(angle);
+        let endX = holdPoint.x + radius * Math.cos(endAngle);
+        let endY = holdPoint.y + radius * Math.sin(endAngle);
+
+        // 绘制线段
+        holdStroke.moveTo(startX, startY);
+        holdStroke.lineTo(endX, endY);
+
+        // 更新角度
+        angle = endAngle + (gapLength / circumference) * Math.PI * 2;
+        if (angle > Math.PI * 2) break; // 防止超出圆周
+      }
+    } else {
+      holdStroke.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
+      holdStroke.drawCircle(
+        holdPoint.x,
+        holdPoint.y,
+        (hold.size + STROKE_WIDTH) / 2
+      );
+    }
+    return holdStroke;
   }
   private _removeEditingHold() {
     this.schema.splice(this._editSchemaIndex.value, 1);
