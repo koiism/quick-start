@@ -59,14 +59,16 @@ export default class RouteEditorEngine {
   _editSchemaIndex: Ref<number> = ref(-1);
   _eventTap: boolean = true;
   _wallInfo: {
-    clickOffset?: { x: number; y: number };
     initialScale?: { _x: number; _y: number };
-    initialTouchDistance?: number;
   } = reactive({});
   _editingHoldInfo: {
     initialSize?: number;
-    initialTouchDistance?: number;
   } = reactive({});
+  _zoomProcess: {
+    initialTouchDistance?: number;
+    zoomStart?: boolean;
+  } = reactive({});
+  _clickOffset?: { x: number; y: number };
   _zoomStart: boolean = false;
   removeListener: () => void;
   eventDispatcher: (e) => void = this._eventDispatcher.bind(this);
@@ -125,8 +127,6 @@ export default class RouteEditorEngine {
       maskSprite.position.set(worldX, worldY);
       maskSprite.alpha = 0.5;
       this.wall?.addChild(maskSprite);
-      // 绘制hold
-
       const holds: any[] = [];
       const holdStrokes: any[] = [];
       this.schema.forEach((hold, index) => {
@@ -377,7 +377,7 @@ export default class RouteEditorEngine {
     if (value === CANVAS_MODE.VIEW) {
       this.listenViewMode();
     } else if (value === CANVAS_MODE.INSERT) {
-      // this.listenInsertMode();
+      this.listenInsertMode();
     } else if (value === CANVAS_MODE.EDIT) {
       this.listenEditMode();
     }
@@ -386,22 +386,74 @@ export default class RouteEditorEngine {
     this.mode = this._lastMode.value ?? CANVAS_MODE.VIEW;
   }
   public onZoom(e) {
+    const touch1 = e.touches[0];
+    const touch2 = e.touches[1];
+    if (!this._zoomStart) {
+      this._zoomProcess.initialTouchDistance = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
+      this._zoomStart = true;
+      const centerPoint = {
+        x: (touch1.clientX + touch2.clientX) / 2,
+        y: (touch1.clientY + touch2.clientY) / 2,
+      };
+      const localPoint = this.wall.toLocal(centerPoint);
+      this._clickOffset = {
+        x: localPoint.x * this.wall.scale.x,
+        y: localPoint.y * this.wall.scale.y,
+      };
+      this.wall.anchor.set(
+        (localPoint.x * this.wall.scale.x) / this.wall.width +
+          this.wall.anchor._x,
+        (localPoint.y * this.wall.scale.y) / this.wall.height +
+          this.wall.anchor._y
+      );
+      this.wall.position.copyFrom({
+        x: centerPoint.x,
+        y: centerPoint.y,
+      });
+      switch (this.mode) {
+        case CANVAS_MODE.VIEW:
+          this.onViewModeZoomStart(e);
+          break;
+        case CANVAS_MODE.INSERT:
+          this.onInsertModeZoomStart(e);
+          break;
+        case CANVAS_MODE.EDIT:
+          this.onEditModeZoomStart(e);
+          break;
+      }
+      return;
+    }
+    const scaleFactor = this.calculateZoomScaleFactor(e);
     switch (this.mode) {
       case CANVAS_MODE.VIEW:
-        this.onViewModeZoom(e);
+        this.onViewModeZoom(scaleFactor);
         break;
       case CANVAS_MODE.INSERT:
-        // this.onInsertModeZoom(e);
+        this.onInsertModeZoom(scaleFactor);
         break;
       case CANVAS_MODE.EDIT:
-        this.onEditModeZoom(e);
+        this.onEditModeZoom(scaleFactor);
         break;
     }
   }
-  private listenViewMode() {
+  private calculateZoomScaleFactor(e) {
+    const touch1 = e.touches[0];
+    const touch2 = e.touches[1];
+    const currentTouchDistance = Math.hypot(
+      touch2.clientX - touch1.clientX,
+      touch2.clientY - touch1.clientY
+    );
+    const scaleFactor =
+      currentTouchDistance / (this._zoomProcess.initialTouchDistance || 1);
+    return scaleFactor;
+  }
+  private wallDragObserver() {
     const onTouchStart = (event) => {
       const localPoint = this.wall.toLocal(event.data.global);
-      this._wallInfo.clickOffset = {
+      this._clickOffset = {
         x: localPoint.x * this.wall.scale.x,
         y: localPoint.y * this.wall.scale.y,
       };
@@ -418,7 +470,7 @@ export default class RouteEditorEngine {
       this._wallInfo.initialScale = Object.assign({}, this.wall.scale);
     };
     const onTouchMove = (event) => {
-      if (this.wall && this._wallInfo.clickOffset && !this._zoomStart) {
+      if (this.wall && this._clickOffset && !this._zoomStart) {
         this.wall.position.copyFrom({
           x: event.global.x,
           y: event.global.y,
@@ -433,52 +485,45 @@ export default class RouteEditorEngine {
     this.stage.on('pointerup', onTouchEnd);
     this.stage.on('pointerupoutside', onTouchEnd);
     this.stage.on('pointerdown', onTouchStart);
-    this.removeListener = () => {
+    const removeListener = () => {
       this.stage.off('pointermove', onTouchMove);
       this.stage.off('pointerup', onTouchEnd);
       this.stage.off('pointerupoutside', onTouchEnd);
       this.stage.off('pointerdown', onTouchStart);
     };
+    return removeListener;
   }
-  private onViewModeZoom(e) {
+  private listenViewMode() {
+    const unobserve = this.wallDragObserver();
+    this.removeListener = () => {
+      unobserve();
+    };
+  }
+  private onViewModeZoomStart(_e) {
+    this._wallInfo.initialScale = Object.assign({}, this.wall.scale);
+  }
+  private onViewModeZoom(scaleFactor) {
     const target = this.wall;
     if (target) {
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      if (!this._zoomStart) {
-        this._wallInfo.initialTouchDistance = Math.hypot(
-          touch1.clientX - touch2.clientX,
-          touch1.clientY - touch2.clientY
-        );
-        this._wallInfo.initialScale = Object.assign({}, target.scale);
-        this._zoomStart = true;
-        const centerPoint = {
-          x: (touch1.clientX + touch2.clientX) / 2,
-          y: (touch1.clientY + touch2.clientY) / 2,
-        };
-        const localPoint = this.wall.toLocal(centerPoint);
-        this._wallInfo.clickOffset = {
-          x: localPoint.x * this.wall.scale.x,
-          y: localPoint.y * this.wall.scale.y,
-        };
-        this.wall.anchor.set(
-          (localPoint.x * this.wall.scale.x) / this.wall.width +
-            this.wall.anchor._x,
-          (localPoint.y * this.wall.scale.y) / this.wall.height +
-            this.wall.anchor._y
-        );
-        this.wall.position.copyFrom({
-          x: centerPoint.x,
-          y: centerPoint.y,
-        });
-        return;
-      }
-      const currentTouchDistance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
+      const initialScale = this._wallInfo.initialScale;
+      target.scale.set(
+        (initialScale?._x || 1) * scaleFactor,
+        (initialScale?._y || 1) * scaleFactor
       );
-      const scaleFactor =
-        currentTouchDistance / (this._wallInfo.initialTouchDistance || 1);
+    }
+  }
+  private listenInsertMode() {
+    const unobserve = this.wallDragObserver();
+    this.removeListener = () => {
+      unobserve();
+    };
+  }
+  private onInsertModeZoomStart(_e) {
+    this._wallInfo.initialScale = Object.assign({}, this.wall.scale);
+  }
+  private onInsertModeZoom(scaleFactor) {
+    const target = this.wall;
+    if (target) {
       const initialScale = this._wallInfo.initialScale;
       target.scale.set(
         (initialScale?._x || 1) * scaleFactor,
@@ -514,44 +559,14 @@ export default class RouteEditorEngine {
       this.stage.off('pointerdown', onTouchStart);
     };
   }
-  private onEditModeZoom(e) {
+  private onEditModeZoomStart(_e) {
+    const target = this.schema[this._editSchemaIndex.value];
+    this._editingHoldInfo.initialSize = target.size;
+  }
+  private onEditModeZoom(scaleFactor) {
     const target = this.schema[this._editSchemaIndex.value];
     if (target) {
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      if (!this._zoomStart) {
-        this._editingHoldInfo.initialTouchDistance = Math.hypot(
-          touch1.clientX - touch2.clientX,
-          touch1.clientY - touch2.clientY
-        );
-        this._editingHoldInfo.initialSize = target.size;
-        this._zoomStart = true;
-        const centerPoint = {
-          x: (touch1.clientX + touch2.clientX) / 2,
-          y: (touch1.clientY + touch2.clientY) / 2,
-        };
-        const localPoint = this.wall.toLocal(centerPoint);
-        this.wall.anchor.set(
-          (localPoint.x * this.wall.scale.x) / this.wall.width +
-            this.wall.anchor._x,
-          (localPoint.y * this.wall.scale.y) / this.wall.height +
-            this.wall.anchor._y
-        );
-        this.wall.position.copyFrom({
-          x: centerPoint.x,
-          y: centerPoint.y,
-        });
-        return;
-      }
-      const currentTouchDistance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      const scaleFactor =
-        currentTouchDistance /
-        (this._editingHoldInfo.initialTouchDistance || 1);
       const initialScale = this._editingHoldInfo.initialSize || 100;
-
       target.size = initialScale * scaleFactor;
     }
   }
