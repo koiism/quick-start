@@ -17,6 +17,7 @@ export const holdColorMap = {
   [HOLD_TYPE.FOOT]: 0xa5f3fc,
 };
 
+// TODO: Insert 模式
 export default class RouteEditorEngine {
   PIXI: any;
   stage: any;
@@ -64,6 +65,7 @@ export default class RouteEditorEngine {
   } = reactive({});
   _editingHoldInfo: {
     initialSize?: number;
+    initialPosition?: { x: number; y: number };
   } = reactive({});
   _zoomProcess: {
     initialTouchDistance?: number;
@@ -589,16 +591,29 @@ export default class RouteEditorEngine {
     };
   }
   private listenEditMode() {
-    const onTouchStart = () => {};
+    const onTouchStart = (event) => {
+      const localPoint = this.wall.toLocal(event.data.global);
+      const currentHold = this.schema[this._editSchemaIndex.value];
+      this._clickOffset = {
+        x: localPoint.x,
+        y: localPoint.y,
+      };
+      this._editingHoldInfo.initialPosition = {
+        x: currentHold.x,
+        y: currentHold.y,
+      };
+    };
     const onTouchMove = (event) => {
       if (this._editSchemaIndex.value >= 0 && !this._zoomStart) {
-        const localPoint = this.wall.toLocal(event.data.global);
+        const localPoint = this.wall.toLocal(event.global);
         this.schema[this._editSchemaIndex.value].x =
-          localPoint.x +
-          (this.wall.anchor._x * this.wall.width) / this.wall.scale._x;
+          this._editingHoldInfo.initialPosition?.x +
+          localPoint.x -
+          (this._clickOffset?.x || 0);
         this.schema[this._editSchemaIndex.value].y =
-          localPoint.y +
-          (this.wall.anchor._y * this.wall.height) / this.wall.scale._y;
+          this._editingHoldInfo.initialPosition?.y +
+          localPoint.y -
+          (this._clickOffset?.y || 0);
       }
     };
     const onTouchEnd = () => {
