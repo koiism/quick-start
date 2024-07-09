@@ -47,7 +47,11 @@ export default class RouteEditorEngine {
       return;
     },
     set: (value) => {
-      this.mode = CANVAS_MODE.INSERT;
+      if (!value) {
+        this.mode = CANVAS_MODE.VIEW;
+      } else {
+        this.mode = CANVAS_MODE.INSERT;
+      }
       this._selectedHoldType.value = value;
     },
   });
