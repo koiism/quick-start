@@ -17,31 +17,15 @@ export const holdColorMap = {
   [HOLD_TYPE.FOOT]: 0xa5f3fc,
 };
 
-// TODO: Insert 模式
+// TODO: DELETE 模式
+// TODO: 限制岩壁缩放和拖拽
+// TODO: 优化性能
+// TODO: 贴胶带
 export default class RouteEditorEngine {
   PIXI: any;
   stage: any;
   wall: any;
-  schema: THold[] = [
-    {
-      x: 100,
-      y: 100,
-      size: 50,
-      type: HOLD_TYPE.FOOT,
-    },
-    {
-      x: 300,
-      y: 300,
-      size: 50,
-      type: HOLD_TYPE.MIDDLE,
-    },
-    {
-      x: 500,
-      y: 500,
-      size: 50,
-      type: HOLD_TYPE.START_END,
-    },
-  ];
+  schema: THold[] = [];
   removeEditingHold: () => void = this._removeEditingHold.bind(this);
   modeText = computed(() => {
     switch (this.mode) {
@@ -569,14 +553,26 @@ export default class RouteEditorEngine {
     const onWallTap = (e) => {
       if (!this._eventTap) return;
       if (!this._selectedHoldType.value) return;
+
+      const schemaX =
+        (e.global.x -
+          this.wall.position._x +
+          this.wall.anchor._x * this.wall.width) /
+        this.wall.scale._x;
+      const schemaY =
+        (e.global.y -
+          this.wall.position._y +
+          this.wall.anchor._y * this.wall.height) /
+        this.wall.scale._y;
+
       this.schema.push({
-        x: e.global.x,
-        y: e.global.y,
+        x: schemaX,
+        y: schemaY,
         size: this._defaultHoldSize,
         type: this._selectedHoldType.value,
       });
       this.mode = CANVAS_MODE.EDIT;
-      this._editSchemaIndex.value = this._holdSprites.length;
+      this._editSchemaIndex.value = this.schema.length - 1;
     };
     this.wall.on('pointerup', onWallTap);
     this.removeListener = () => {
