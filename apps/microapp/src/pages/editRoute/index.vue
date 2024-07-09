@@ -64,23 +64,11 @@ import { generateRandomId } from '@/utils/generateRandomId';
 import { onMounted, ref } from 'vue';
 import { HOLD_TYPE } from '@/server/router/zods/route';
 import RouteEditorEngine, { CANVAS_MODE } from './service';
-import { watch } from 'vue';
 
 const canvasRef = ref();
 const worldElementId = generateRandomId();
-const selectedHoldType = ref<HOLD_TYPE>();
-watch(
-  () => selectedHoldType.value,
-  (value) => {
-    if (value) {
-      engine.mode = CANVAS_MODE.INSERT;
-    } else {
-      engine.mode = CANVAS_MODE.VIEW;
-    }
-  }
-);
-
 const engine = new RouteEditorEngine(canvasRef);
+const selectedHoldType = engine.selectedHold;
 
 let touchEvent = engine.eventDispatcher;
 const onConfirmEdit = () => {

@@ -55,6 +55,20 @@ export default class RouteEditorEngine {
         return '查看';
     }
   });
+  selectedHold = computed({
+    get: () => {
+      if (this.mode === CANVAS_MODE.INSERT) {
+        return this._selectedHoldType.value;
+      }
+      return;
+    },
+    set: (value) => {
+      this.mode = CANVAS_MODE.INSERT;
+      this._selectedHoldType.value = value;
+    },
+  });
+  _selectedHoldType: Ref<HOLD_TYPE | undefined> = ref();
+  _defaultHoldSize: number = 50;
   _holdSprites: any[] = [];
   _mode: Ref<CANVAS_MODE | undefined> = ref();
   _lastMode: Ref<CANVAS_MODE | undefined> = ref();
@@ -105,6 +119,7 @@ export default class RouteEditorEngine {
   }
   public initWall = (wallImg: string) => {
     const wall = this.PIXI.Sprite.from(wallImg);
+    wall.eventMode = 'static';
     this.wall = wall;
     this.stage.addChild(wall);
     this.mode = CANVAS_MODE.VIEW;
@@ -551,8 +566,22 @@ export default class RouteEditorEngine {
   }
   private listenInsertMode() {
     const unobserve = this.wallDragObserver();
+    const onWallTap = (e) => {
+      if (!this._eventTap) return;
+      if (!this._selectedHoldType.value) return;
+      this.schema.push({
+        x: e.global.x,
+        y: e.global.y,
+        size: this._defaultHoldSize,
+        type: this._selectedHoldType.value,
+      });
+      this.mode = CANVAS_MODE.EDIT;
+      this._editSchemaIndex.value = this._holdSprites.length;
+    };
+    this.wall.on('pointerup', onWallTap);
     this.removeListener = () => {
       unobserve();
+      this.wall.off('pointerup', onWallTap);
     };
   }
   private onInsertModeZoomStart(_e) {
