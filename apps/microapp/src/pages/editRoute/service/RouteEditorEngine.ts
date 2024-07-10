@@ -55,7 +55,7 @@ export default class RouteEditorEngine {
     },
   });
   _canvas: any;
-  _schema: Hold[] = [];
+  _schema = Hold.allHolds;
   _maskSprite: any;
   _selectedHoldType: Ref<HOLD_TYPE | undefined> = ref();
   _defaultHoldSize: number = 50;
@@ -130,7 +130,7 @@ export default class RouteEditorEngine {
     };
   }
   private loadSchema(schema: THold[]) {
-    this._schema = schema.map((hold) => {
+    schema.map((hold) => {
       return new Hold(this, hold);
     });
     this.renderSchema();
@@ -141,17 +141,14 @@ export default class RouteEditorEngine {
     }
     // 清空墙
     this.wall.removeChildren();
-    if (this._schema.length) {
+    if (this._schema.size) {
       this.wall.addChild(this._maskSprite);
       this._schema.forEach((hold) => {
         this.updateWallMask();
         hold.update();
       });
-      this._schema.forEach((hold, index) => {
-        if (
-          this._editSchemaIndex.value === index &&
-          this.mode === CANVAS_MODE.EDIT
-        ) {
+      this._schema.forEach((hold) => {
+        if (hold.isEdit() && this.mode === CANVAS_MODE.EDIT) {
           this.wall.addChild(hold.holdStrokeEdit);
         } else {
           this.wall.addChild(hold.holdStroke);
@@ -160,7 +157,6 @@ export default class RouteEditorEngine {
       this._schema.forEach((hold) => {
         this.wall.addChild(hold.holdSprite);
       });
-      this.listenHold();
     }
   }
   private drawWallMask() {
@@ -178,7 +174,7 @@ export default class RouteEditorEngine {
     maskSprite.position.set(worldX, worldY);
   }
   private _removeEditingHold() {
-    this._schema.splice(this._editSchemaIndex.value, 1);
+    Hold.editingTarget?.remove();
     this.restoreLastMode();
   }
   private _eventDispatcher(e) {
@@ -212,6 +208,7 @@ export default class RouteEditorEngine {
     this._lastMode.value = this._mode.value;
     this._mode.value = value;
     this.listenMode();
+    this.listenHold();
   }
   public restoreLastMode() {
     this.mode = this._lastMode.value ?? CANVAS_MODE.VIEW;
@@ -335,32 +332,9 @@ export default class RouteEditorEngine {
     }
   }
   private listenHold() {
-    this.removeHoldListener?.();
-    if (this.mode === CANVAS_MODE.VIEW) {
-      this.listenViewHold();
-    } else if (this.mode === CANVAS_MODE.INSERT) {
-      this.listenInsertHold();
-    } else if (this.mode === CANVAS_MODE.EDIT) {
-      this.listenEditHold();
-    }
-  }
-  private listenViewHold() {
-    const unobserve: (() => void)[] = [];
-
-    this._schema.forEach((hold, index) => {
-      const onHoldTap = () => {
-        if (!this._eventTap) return;
-        this.mode = CANVAS_MODE.EDIT;
-        this._editSchemaIndex.value = index;
-      };
-      hold.holdSprite.on('pointerup', onHoldTap);
-      unobserve.push(() => hold.holdSprite.off('pointerup', onHoldTap));
+    this._schema.forEach((hold) => {
+      hold.listenHold();
     });
-    this.removeHoldListener = () => {
-      unobserve.forEach((fn) => {
-        fn();
-      });
-    };
   }
   private listenViewMode() {
     const unobserve = this.wallDragObserver();
@@ -380,24 +354,6 @@ export default class RouteEditorEngine {
         (initialScale?._y || 1) * scaleFactor
       );
     }
-  }
-  private listenInsertHold() {
-    const unobserve: (() => void)[] = [];
-
-    this._schema.forEach((hold, index) => {
-      const onHoldTap = () => {
-        if (!this._eventTap) return;
-        this.mode = CANVAS_MODE.EDIT;
-        this._editSchemaIndex.value = index;
-      };
-      hold.holdSprite.on('pointerup', onHoldTap);
-      unobserve.push(() => hold.holdSprite.off('pointerup', onHoldTap));
-    });
-    this.removeHoldListener = () => {
-      unobserve.forEach((fn) => {
-        fn();
-      });
-    };
   }
   private listenInsertMode() {
     const unobserve = this.wallDragObserver();
@@ -423,10 +379,9 @@ export default class RouteEditorEngine {
         type: this._selectedHoldType.value,
       };
       const newHold = new Hold(this, hold);
+      newHold.edit();
 
-      this._schema.push(newHold);
       this.mode = CANVAS_MODE.EDIT;
-      this._editSchemaIndex.value = this._schema.length - 1;
     };
     this.wall.on('pointerup', onWallTap);
     this.removeListener = () => {
@@ -447,49 +402,27 @@ export default class RouteEditorEngine {
       );
     }
   }
-  private listenEditHold() {
-    const unobserve: (() => void)[] = [];
-
-    this._schema.forEach((hold, index) => {
-      const onHoldTouch = () => {
-        this._editSchemaIndex.value = index;
-      };
-      hold.holdSprite.on('pointerdown', onHoldTouch);
-      unobserve.push(() => hold.holdSprite.off('pointerdown', onHoldTouch));
-      const onHoldTap = () => {
-        if (!this._eventTap) return;
-        this._editSchemaIndex.value = index;
-      };
-      hold.holdSprite.on('pointerup', onHoldTap);
-      unobserve.push(() => hold.holdSprite.off('pointerup', onHoldTap));
-    });
-    this.removeHoldListener = () => {
-      unobserve.forEach((fn) => {
-        fn();
-      });
-    };
-  }
   private listenEditMode() {
     const onTouchStart = (event) => {
       const localPoint = this.wall.toLocal(event.data.global);
-      const currentHold = this._schema[this._editSchemaIndex.value];
       this._clickOffset = {
         x: localPoint.x,
         y: localPoint.y,
       };
       this._editingHoldInfo.initialPosition = {
-        x: currentHold.x,
-        y: currentHold.y,
+        x: Hold.editingTarget?.x || 0,
+        y: Hold.editingTarget?.y || 0,
       };
     };
     const onTouchMove = (event) => {
-      if (this._editSchemaIndex.value >= 0 && !this._zoomStart) {
+      const editingTarget = Hold.editingTarget;
+      if (editingTarget && !this._zoomStart) {
         const localPoint = this.wall.toLocal(event.global);
-        this._schema[this._editSchemaIndex.value].x =
+        editingTarget.x =
           this._editingHoldInfo.initialPosition?.x +
           localPoint.x -
           (this._clickOffset?.x || 0);
-        this._schema[this._editSchemaIndex.value].y =
+        editingTarget.y =
           this._editingHoldInfo.initialPosition?.y +
           localPoint.y -
           (this._clickOffset?.y || 0);
@@ -511,11 +444,11 @@ export default class RouteEditorEngine {
     };
   }
   private onEditModeZoomStart(_e) {
-    const target = this._schema[this._editSchemaIndex.value];
-    this._editingHoldInfo.initialSize = target.size;
+    const target = Hold.editingTarget;
+    this._editingHoldInfo.initialSize = target?.size || 1;
   }
   private onEditModeZoom(scaleFactor) {
-    const target = this._schema[this._editSchemaIndex.value];
+    const target = Hold.editingTarget;
     if (target) {
       const initialScale = this._editingHoldInfo.initialSize || 100;
       target.size = initialScale * scaleFactor;

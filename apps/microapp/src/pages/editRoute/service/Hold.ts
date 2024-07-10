@@ -1,5 +1,5 @@
 import { HOLD_TYPE, THold } from '@/server/router/zods/route';
-import RouteEditorEngine from './RouteEditorEngine';
+import RouteEditorEngine, { CANVAS_MODE } from './RouteEditorEngine';
 
 const STROKE_WIDTH = 6;
 export const holdColorMap = {
@@ -9,15 +9,20 @@ export const holdColorMap = {
 };
 
 class Hold {
+  static allHolds: Set<Hold> = new Set();
+  static editingTarget: Hold | null = null;
   public holdSprite: any;
   public holdSpriteMask: any;
   public holdStroke: any;
   public holdStrokeEdit: any;
+  private _removeHoldListener: () => void;
   constructor(
     private engine: RouteEditorEngine,
     private _hold: THold
   ) {
     this.generateHold();
+    this.listenHold();
+    Hold.allHolds.add(this);
   }
   get x() {
     return this._hold.x;
@@ -43,9 +48,42 @@ class Hold {
   set type(value) {
     this._hold.type = value;
   }
+  public edit() {
+    Hold.editingTarget = this;
+  }
+  public isEdit() {
+    return Hold.editingTarget === this;
+  }
+  public remove() {
+    Hold.allHolds.delete(this);
+    const trashes = [
+      this.holdSpriteMask,
+      this.holdSprite,
+      this.holdStroke,
+      this.holdStrokeEdit,
+    ];
+    this._removeHoldListener?.();
+    trashes.forEach((trash) => {
+      if (trash.parent) {
+        trash.parent.removeChild(trash);
+      }
+      trash.destroy();
+      trash = null;
+    });
+  }
   public update() {
     this.updateHoldSprite();
     this.updateHoldStroke();
+  }
+  public listenHold() {
+    this._removeHoldListener?.();
+    if (this.engine.mode === CANVAS_MODE.VIEW) {
+      this.listenViewHold();
+    } else if (this.engine.mode === CANVAS_MODE.INSERT) {
+      this.listenInsertHold();
+    } else if (this.engine.mode === CANVAS_MODE.EDIT) {
+      this.listenEditHold();
+    }
   }
   private pointToWall({ x, y }: { x: number; y: number }) {
     const wall = this.engine.wall;
@@ -252,6 +290,43 @@ class Hold {
     holdSprite.position.set(originPoint.x, originPoint.y);
     holdSprite.width = this.engine.wall.width / this.engine.wall.scale.x;
     holdSprite.height = this.engine.wall.height / this.engine.wall.scale.y;
+  }
+  private listenEditHold() {
+    const onHoldTouch = () => {
+      Hold.editingTarget = this;
+    };
+    this.holdSprite.on('pointerdown', onHoldTouch);
+    const onHoldTap = () => {
+      if (!this.engine._eventTap) return;
+      Hold.editingTarget = this;
+    };
+    this.holdSprite.on('pointerup', onHoldTap);
+    this._removeHoldListener = () => {
+      this.holdSprite.off('pointerdown', onHoldTouch);
+      this.holdSprite.off('pointerup', onHoldTap);
+    };
+  }
+  private listenInsertHold() {
+    const onHoldTap = () => {
+      if (!this.engine._eventTap) return;
+      this.engine.mode = CANVAS_MODE.EDIT;
+      Hold.editingTarget = this;
+    };
+    this.holdSprite.on('pointerup', onHoldTap);
+    this._removeHoldListener = () => {
+      this.holdSprite.off('pointerup', onHoldTap);
+    };
+  }
+  private listenViewHold() {
+    const onHoldTap = () => {
+      if (!this.engine._eventTap) return;
+      this.engine.mode = CANVAS_MODE.EDIT;
+      Hold.editingTarget = this;
+    };
+    this.holdSprite.on('pointerup', onHoldTap);
+    this._removeHoldListener = () => {
+      this.holdSprite.off('pointerup', onHoldTap);
+    };
   }
 }
 
