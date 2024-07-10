@@ -4,7 +4,7 @@ import { unsafeEval } from '@/utils/pixi/unsafeEval';
 import { useTaroNode } from '@/utils/hooks/useTaroRect';
 import { Ref, computed, reactive, ref } from 'vue';
 import { HOLD_TYPE, THold } from '@/server/router/zods/route';
-const STROKE_WIDTH = 6;
+import { Hold } from './Hold';
 
 export enum CANVAS_MODE {
   VIEW,
@@ -16,13 +16,6 @@ export const holdColorMap = {
   [HOLD_TYPE.START_END]: 0xfde68a,
   [HOLD_TYPE.MIDDLE]: 0xa5f3fc,
   [HOLD_TYPE.FOOT]: 0xa5f3fc,
-};
-
-type TSchemaItem = THold & {
-  holdSpriteMask?: any;
-  holdSprite?: any;
-  holdStroke?: any;
-  holdStrokeEdit?: any;
 };
 
 // TODO: DELETE 模式
@@ -62,7 +55,7 @@ export default class RouteEditorEngine {
     },
   });
   _canvas: any;
-  _schema: TSchemaItem[] = [];
+  _schema: Hold[] = [];
   _maskSprite: any;
   _selectedHoldType: Ref<HOLD_TYPE | undefined> = ref();
   _defaultHoldSize: number = 50;
@@ -138,15 +131,7 @@ export default class RouteEditorEngine {
   }
   private loadSchema(schema: THold[]) {
     this._schema = schema.map((hold) => {
-      const { holdSprite, holdStroke, holdStrokeEdit } =
-        this.generateHold(hold);
-      return {
-        ...hold,
-        holdSpriteMask: holdSprite.mask,
-        holdSprite,
-        holdStroke,
-        holdStrokeEdit,
-      };
+      return new Hold(this, hold);
     });
     this.renderSchema();
   }
@@ -160,8 +145,7 @@ export default class RouteEditorEngine {
       this.wall.addChild(this._maskSprite);
       this._schema.forEach((hold) => {
         this.updateWallMask();
-        this.updateHoldSprite(hold);
-        this.updateHoldStroke(hold);
+        hold.update();
       });
       this._schema.forEach((hold, index) => {
         if (
@@ -192,200 +176,6 @@ export default class RouteEditorEngine {
     maskSprite.height = this.wall.height / this.wall.scale.y;
     const { x: worldX, y: worldY } = this.pointToWall({ x: 0, y: 0 });
     maskSprite.position.set(worldX, worldY);
-  }
-  private generateHold(hold: THold) {
-    const holdSprite = this.generateHoldSprite(hold);
-    const { holdStroke, holdStrokeEdit } = this.generateHoldStroke(hold);
-    return {
-      holdSprite,
-      holdStroke,
-      holdStrokeEdit,
-    };
-  }
-  private generateHoldSprite(hold) {
-    if (hold.type === HOLD_TYPE.FOOT) {
-      return this.generateSquareHoldSprite(hold); // 新增的方形绘制函数
-    } else {
-      return this.generateCircularHoldSprite(hold); // 原有的圆形绘制函数
-    }
-  }
-  private updateHoldSprite(hold) {
-    const originPoint = this.pointToWall({ x: 0, y: 0 });
-    const holdSpriteMask = hold.holdSpriteMask;
-    const holdSprite = hold.holdSprite;
-    holdSpriteMask.position.set(hold.x, hold.y);
-    holdSpriteMask.width = hold.size;
-    holdSpriteMask.height = hold.size;
-    holdSprite.width = this.wall.width / this.wall.scale.x;
-    holdSprite.height = this.wall.height / this.wall.scale.y;
-    holdSprite.position.set(originPoint.x, originPoint.y);
-  }
-  private generateSquareHoldSprite(hold) {
-    const holdSpriteMask = new this.PIXI.Graphics();
-    holdSpriteMask.beginFill(0xffffff);
-    holdSpriteMask.drawRect(
-      -hold.size / 2,
-      -hold.size / 2,
-      hold.size,
-      hold.size
-    );
-    holdSpriteMask.endFill();
-
-    const holdSprite = new this.PIXI.Sprite(this.wall.texture);
-    holdSprite.mask = holdSpriteMask;
-    holdSprite.addChild(holdSpriteMask);
-    holdSprite.eventMode = 'static';
-    return holdSprite;
-  }
-  private generateCircularHoldSprite(hold) {
-    const holdSpriteMask = new this.PIXI.Graphics();
-    holdSpriteMask.beginFill(0xffffff);
-    holdSpriteMask.drawCircle(0, 0, hold.size / 2);
-    holdSpriteMask.endFill();
-
-    const holdSprite = new this.PIXI.Sprite(this.wall.texture);
-    holdSprite.mask = holdSpriteMask;
-    holdSprite.addChild(holdSpriteMask);
-    holdSprite.eventMode = 'static';
-    return holdSprite;
-  }
-
-  private generateHoldStroke(hold) {
-    if (hold.type === HOLD_TYPE.FOOT) {
-      return this.generateSquareHoldStroke(hold); // 新增的方形绘制函数
-    } else {
-      return this.generateCircularHoldStroke(hold); // 原有的圆形绘制函数
-    }
-  }
-  private updateHoldStroke(hold) {
-    const holdPoint = this.pointToWall(hold);
-    const holdStroke = hold.holdStroke;
-    const holdStrokeEdit = hold.holdStrokeEdit;
-    holdStroke.position.set(holdPoint.x, holdPoint.y);
-    holdStroke.width = hold.size + STROKE_WIDTH;
-    holdStroke.height = hold.size + STROKE_WIDTH;
-    holdStrokeEdit.position.set(holdPoint.x, holdPoint.y);
-    holdStrokeEdit.width = hold.size + STROKE_WIDTH;
-    holdStrokeEdit.height = hold.size + STROKE_WIDTH;
-  }
-  private generateSquareHoldStroke(hold) {
-    const generateHoldStrokeEdit = () => {
-      const holdStrokeEdit = new this.PIXI.Graphics();
-
-      holdStrokeEdit.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
-      // 虚线参数：线段长度和空隙长度
-      const dashLength = 3;
-      const gapLength = 3;
-
-      // 计算正方形的边长
-      const sideLength = hold.size + STROKE_WIDTH;
-      // 绘制虚线正方形
-      holdStrokeEdit.beginFill(0x000000, 0); // 设置填充颜色为透明，确保只有边框
-      const numSegments = Math.ceil(sideLength / (dashLength + gapLength));
-      for (let i = 0; i < 4; i++) {
-        // 四条边
-        let x = -sideLength / 2;
-        let y = -sideLength / 2;
-        let dx = 0;
-        let dy = 0;
-        switch (i) {
-          case 0: // 上边
-            dx = 1;
-            break;
-          case 1: // 右边
-            x += sideLength;
-            dy = 1;
-            break;
-          case 2: // 下边
-            x += sideLength;
-            y += sideLength;
-            dx = -1;
-            break;
-          case 3: // 左边
-            y += sideLength;
-            dy = -1;
-            break;
-        }
-        for (let j = 0; j < numSegments; j++) {
-          holdStrokeEdit.moveTo(x, y);
-          x += dx * dashLength;
-          y += dy * dashLength;
-          holdStrokeEdit.lineTo(x, y);
-          x += dx * gapLength;
-          y += dy * gapLength;
-        }
-      }
-      holdStrokeEdit.endFill();
-      return holdStrokeEdit;
-    };
-    const generateHoldStroke = () => {
-      const holdStroke = new this.PIXI.Graphics();
-      holdStroke.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
-      const sideLength = hold.size + STROKE_WIDTH * 2;
-
-      // 绘制实线正方形
-      holdStroke.drawRect(
-        -sideLength / 2,
-        -sideLength / 2,
-        hold.size + STROKE_WIDTH * 2,
-        hold.size + STROKE_WIDTH * 2
-      );
-      return holdStroke;
-    };
-    const holdStrokeEdit = generateHoldStrokeEdit();
-    const holdStroke = generateHoldStroke();
-    return {
-      holdStroke,
-      holdStrokeEdit,
-    };
-  }
-  private generateCircularHoldStroke(hold) {
-    const generateHoldStrokeEdit = () => {
-      const holdStrokeEdit = new this.PIXI.Graphics();
-      holdStrokeEdit.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
-      // 虚线参数：线段长度和空隙长度
-      const dashLength = 2;
-      const gapLength = 2;
-
-      // 计算圆的周长
-      const radius = (hold.size + STROKE_WIDTH) / 2;
-      const circumference = Math.PI * radius;
-
-      // 开始绘制虚线
-      let angle = 0;
-      while (angle < Math.PI * 2) {
-        // 计算线段或空隙的终点角度
-        let endAngle = angle + (dashLength / circumference) * Math.PI * 2;
-        if (endAngle > Math.PI * 2) endAngle = Math.PI * 2;
-
-        // 计算线段或空隙的起始和结束坐标
-        let startX = radius * Math.cos(angle);
-        let startY = radius * Math.sin(angle);
-        let endX = radius * Math.cos(endAngle);
-        let endY = radius * Math.sin(endAngle);
-
-        // 绘制线段
-        holdStrokeEdit.moveTo(startX, startY);
-        holdStrokeEdit.lineTo(endX, endY);
-
-        // 更新角度
-        angle = endAngle + (gapLength / circumference) * Math.PI * 2;
-        if (angle > Math.PI * 2) break; // 防止超出圆周
-      }
-      return holdStrokeEdit;
-    };
-    const generateHoldStroke = () => {
-      const holdStroke = new this.PIXI.Graphics();
-      holdStroke.lineStyle(STROKE_WIDTH, holdColorMap[hold.type], 1);
-      holdStroke.drawCircle(0, 0, (hold.size + STROKE_WIDTH) / 2);
-      return holdStroke;
-    };
-    const holdStrokeEdit = generateHoldStrokeEdit();
-    const holdStroke = generateHoldStroke();
-    return {
-      holdStroke,
-      holdStrokeEdit,
-    };
   }
   private _removeEditingHold() {
     this._schema.splice(this._editSchemaIndex.value, 1);
@@ -632,18 +422,9 @@ export default class RouteEditorEngine {
         size: this._defaultHoldSize,
         type: this._selectedHoldType.value,
       };
-      const { holdSprite, holdStroke, holdStrokeEdit } =
-        this.generateHold(hold);
-      this._schema.push({
-        x: schemaX,
-        y: schemaY,
-        size: this._defaultHoldSize,
-        type: this._selectedHoldType.value,
-        holdSpriteMask: holdSprite.mask,
-        holdSprite,
-        holdStroke,
-        holdStrokeEdit,
-      });
+      const newHold = new Hold(this, hold);
+
+      this._schema.push(newHold);
       this.mode = CANVAS_MODE.EDIT;
       this._editSchemaIndex.value = this._schema.length - 1;
     };

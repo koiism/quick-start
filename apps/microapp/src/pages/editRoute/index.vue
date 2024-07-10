@@ -63,7 +63,7 @@ import { createPIXI } from '@/utils/pixi/pixi.miniprogram';
 import { generateRandomId } from '@/utils/generateRandomId';
 import { onMounted, ref } from 'vue';
 import { HOLD_TYPE } from '@/server/router/zods/route';
-import RouteEditorEngine, { CANVAS_MODE } from './service';
+import RouteEditorEngine, { CANVAS_MODE } from './service/RouteEditorEngine';
 
 const canvasRef = ref();
 const worldElementId = generateRandomId();
