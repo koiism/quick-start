@@ -8,7 +8,7 @@
 import { Ref, ref } from 'vue';
 import { provide } from 'vue';
 
-const internalValue = defineModel({ type: String });
+const internalValue = defineModel<string | number>();
 const emit = defineEmits(['change']);
 
 const updateValue = (newValue) => {
@@ -27,8 +27,8 @@ provide<ICustomRadioContext>(CustomRadioSymbol, {
 <script lang="ts">
 export const CustomRadioSymbol = Symbol('customRadioGroupModel');
 export interface ICustomRadioContext {
-  internalValue: Ref<string | undefined>;
-  updateValue: (newValue?: string) => void;
+  internalValue: Ref<string | number | undefined>;
+  updateValue: (newValue?: string | number) => void;
 }
 export const defaultContext: ICustomRadioContext = {
   internalValue: ref(),

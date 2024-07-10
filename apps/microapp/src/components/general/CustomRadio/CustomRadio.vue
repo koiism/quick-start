@@ -26,7 +26,7 @@ const props = defineProps<IProps>();
 const radioGroupModel = inject(CustomRadioSymbol, defaultContext);
 
 const checked = computed(() => {
-  const checked = radioGroupModel.internalValue.value === String(props.value);
+  const checked = radioGroupModel.internalValue.value === props.value;
   return checked;
 });
 
@@ -35,7 +35,7 @@ const handleChange = () => {
     return;
   }
   if (!checked.value) {
-    radioGroupModel.updateValue(String(props.value));
+    radioGroupModel.updateValue(props.value);
   } else {
     radioGroupModel.updateValue();
   }
