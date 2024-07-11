@@ -10,7 +10,14 @@ export const holdColorMap = {
 
 class Hold {
   static allHolds: Set<Hold> = new Set();
-  static editingTarget: Hold | null = null;
+  static _editingTarget: Hold | null = null;
+  static get editingTarget() {
+    return this._editingTarget;
+  }
+  set editingTarget(value: Hold | null) {
+    Hold._editingTarget = value;
+    this.engine.mode = CANVAS_MODE.EDIT;
+  }
   public holdSprite: any;
   public holdSpriteMask: any;
   public holdStroke: any;
@@ -49,7 +56,7 @@ class Hold {
     this._hold.type = value;
   }
   public edit() {
-    Hold.editingTarget = this;
+    this.editingTarget = this;
   }
   public isEdit() {
     return Hold.editingTarget === this;
@@ -78,12 +85,24 @@ class Hold {
   }
   public listenHold() {
     this._removeHoldListener?.();
-    if (this.engine.mode === CANVAS_MODE.VIEW) {
-      this.listenViewHold();
-    } else if (this.engine.mode === CANVAS_MODE.INSERT) {
-      this.listenInsertHold();
-    } else if (this.engine.mode === CANVAS_MODE.EDIT) {
-      this.listenEditHold();
+    // switch case
+    switch (this.engine.mode) {
+      case CANVAS_MODE.EDIT: {
+        this.listenEditHold();
+        break;
+      }
+      case CANVAS_MODE.INSERT: {
+        this.listenInsertHold();
+        break;
+      }
+      case CANVAS_MODE.DELETE: {
+        this.listenDeleteHold();
+        break;
+      }
+      default: {
+        this.listenViewHold();
+        break;
+      }
     }
   }
   private limitHold() {
@@ -310,12 +329,13 @@ class Hold {
   }
   private listenEditHold() {
     const onHoldTouch = () => {
-      Hold.editingTarget = this;
+      this.editingTarget = this;
     };
     this.holdSprite.on('pointerdown', onHoldTouch);
-    const onHoldTap = () => {
+    const onHoldTap = (event) => {
       if (!this.engine._eventTap) return;
-      Hold.editingTarget = this;
+      this.editingTarget = this;
+      event.stopPropagation();
     };
     this.holdSprite.on('pointerup', onHoldTap);
     this._removeHoldListener = () => {
@@ -324,10 +344,24 @@ class Hold {
     };
   }
   private listenInsertHold() {
-    const onHoldTap = () => {
+    const onHoldTap = (event) => {
       if (!this.engine._eventTap) return;
-      this.engine.mode = CANVAS_MODE.EDIT;
-      Hold.editingTarget = this;
+      this.editingTarget = this;
+      event.stopPropagation();
+    };
+    this.holdSprite.on('pointerup', onHoldTap);
+    this._removeHoldListener = () => {
+      this.holdSprite.off('pointerup', onHoldTap);
+    };
+  }
+  private listenDeleteHold() {
+    const onHoldTap = (event) => {
+      if (!this.engine._eventTap) return;
+      this.remove();
+      if (!Hold.allHolds.size) {
+        this.engine.restoreLastMode();
+      }
+      event.stopPropagation();
     };
     this.holdSprite.on('pointerup', onHoldTap);
     this._removeHoldListener = () => {
@@ -335,10 +369,10 @@ class Hold {
     };
   }
   private listenViewHold() {
-    const onHoldTap = () => {
+    const onHoldTap = (event) => {
       if (!this.engine._eventTap) return;
-      this.engine.mode = CANVAS_MODE.EDIT;
-      Hold.editingTarget = this;
+      this.editingTarget = this;
+      event.stopPropagation();
     };
     this.holdSprite.on('pointerup', onHoldTap);
     this._removeHoldListener = () => {

@@ -3,30 +3,53 @@
     <nav-bar>添加线路</nav-bar>
     <view class="flex-1 w-full relative">
       <view
-        class="absolute top-3 w-full flex items-center justify-between px-4 z-100 box-border h-10"
+        class="absolute top-3 w-full flex items-center justify-between px-4 z-100 box-border flex-row-reverse"
         catchtouchmove="true"
       >
-        <view>模式: {{ engine.modeText }}</view>
         <view
-          class="bg-card-bg rounded-full flex px-4 gap-2 h-10 items-center"
-          v-show="engine.mode === CANVAS_MODE.EDIT"
+          class="bg-card-bg rounded-full flex items-center"
+          v-if="engine.mode === CANVAS_MODE.EDIT"
         >
-          <svg-icon
-            type="check"
-            color="primary"
-            @click="onConfirmEdit"
-          ></svg-icon>
-          <svg-icon
-            type="delete"
-            color="red"
+          <view
+            class="h-10 w-10 flex items-center justify-center"
+            @click="engine.restoreLastMode"
+          >
+            <svg-icon type="check" color="primary"></svg-icon>
+          </view>
+          <view
+            class="h-10 w-10 flex items-center justify-center"
             @click="engine.removeEditingHold"
-          ></svg-icon>
+          >
+            <svg-icon type="delete" color="red"></svg-icon>
+          </view>
+        </view>
+        <view
+          class="bg-card-bg rounded-full flex items-center"
+          v-else-if="engine._schema.size && engine.mode === CANVAS_MODE.DELETE"
+        >
+          <view
+            class="h-10 w-10 flex items-center justify-center"
+            @click="engine.restoreLastMode"
+          >
+            <svg-icon type="delete" color="red"></svg-icon>
+          </view>
+        </view>
+        <view
+          class="bg-card-bg rounded-full flex h-10 items-center"
+          v-else-if="engine._schema.size && engine.mode !== CANVAS_MODE.DELETE"
+        >
+          <view
+            class="h-10 w-10 flex items-center justify-center"
+            @click="engine.mode = CANVAS_MODE.DELETE"
+          >
+            <svg-icon type="delete" color="icon"></svg-icon>
+          </view>
         </view>
       </view>
       <canvas
         :id="worldElementId"
         :canvas-id="worldElementId"
-        class="absolute top-0 bottom-0 left-0 right-0 z-0 w-auto h-auto"
+        class="absolute top-14 bottom-0 left-0 right-0 z-0 w-auto h-100"
         ref="canvasRef"
         type="webgl"
         @touchstart="touchEvent"
@@ -68,12 +91,9 @@ import RouteEditorEngine, { CANVAS_MODE } from './service/RouteEditorEngine';
 const canvasRef = ref();
 const worldElementId = generateRandomId();
 const engine = new RouteEditorEngine(canvasRef);
-const selectedHoldType = engine.selectedHold;
+const selectedHoldType = engine.selectedHoldType;
 
 let touchEvent = engine.eventDispatcher;
-const onConfirmEdit = () => {
-  engine.restoreLastMode();
-};
 
 onMounted(async () => {
   await engine.initWorld();

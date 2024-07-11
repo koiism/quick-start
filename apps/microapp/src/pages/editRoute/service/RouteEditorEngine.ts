@@ -10,6 +10,7 @@ export enum CANVAS_MODE {
   VIEW,
   INSERT,
   EDIT,
+  DELETE,
 }
 
 export const holdColorMap = {
@@ -18,8 +19,6 @@ export const holdColorMap = {
   [HOLD_TYPE.FOOT]: 0xa5f3fc,
 };
 
-// TODO: DELETE 模式
-// TODO: 限制缩放和拖拽
 // TODO: 贴胶带
 export default class RouteEditorEngine {
   PIXI: any;
@@ -38,7 +37,7 @@ export default class RouteEditorEngine {
         return '查看';
     }
   });
-  selectedHold = computed({
+  selectedHoldType = computed({
     get: () => {
       if (this.mode === CANVAS_MODE.INSERT) {
         return this._selectedHoldType.value;
@@ -183,7 +182,6 @@ export default class RouteEditorEngine {
     };
     const overWidth = this.wall.width - this._canvas.width;
     const overHeight = this.wall.height - this._canvas.height;
-    // 容错参数
 
     if (vector.x > overWidth / 2) {
       this.wall.position.x = originPoint.x - overWidth / 2;
@@ -294,12 +292,14 @@ export default class RouteEditorEngine {
     if (this._mode.value === value) return;
     this._lastMode.value = this._mode.value;
     this._mode.value = value;
-    this.listenMode();
+    setTimeout(() => {
+      this.listenMode();
+    });
     this.listenHold();
   }
-  public restoreLastMode() {
+  public restoreLastMode = () => {
     this.mode = this._lastMode.value ?? CANVAS_MODE.VIEW;
-  }
+  };
   public onZoom(e) {
     const touch1 = e.touches[0];
     const touch2 = e.touches[1];
@@ -336,20 +336,30 @@ export default class RouteEditorEngine {
         case CANVAS_MODE.EDIT:
           this.onEditModeZoomStart(e);
           break;
+        default:
+          this.onViewModeZoomStart(e);
+          break;
       }
       return;
     }
     const scaleFactor = this.calculateZoomScaleFactor(e);
     switch (this.mode) {
-      case CANVAS_MODE.VIEW:
+      case CANVAS_MODE.VIEW: {
         this.onViewModeZoom(scaleFactor);
         break;
-      case CANVAS_MODE.INSERT:
+      }
+      case CANVAS_MODE.INSERT: {
         this.onInsertModeZoom(scaleFactor);
         break;
-      case CANVAS_MODE.EDIT:
+      }
+      case CANVAS_MODE.EDIT: {
         this.onEditModeZoom(scaleFactor);
         break;
+      }
+      default: {
+        this.onViewModeZoom(scaleFactor);
+        break;
+      }
     }
   }
   private calculateZoomScaleFactor(e) {
@@ -406,12 +416,23 @@ export default class RouteEditorEngine {
   }
   private listenMode() {
     this.removeListener?.();
-    if (this.mode === CANVAS_MODE.VIEW) {
-      this.listenViewMode();
-    } else if (this.mode === CANVAS_MODE.INSERT) {
-      this.listenInsertMode();
-    } else if (this.mode === CANVAS_MODE.EDIT) {
-      this.listenEditMode();
+    switch (this.mode) {
+      case CANVAS_MODE.VIEW: {
+        this.listenViewMode();
+        break;
+      }
+      case CANVAS_MODE.EDIT: {
+        this.listenEditMode();
+        break;
+      }
+      case CANVAS_MODE.INSERT: {
+        this.listenInsertMode();
+        break;
+      }
+      default: {
+        this.listenViewMode();
+        break;
+      }
     }
   }
   private listenHold() {
@@ -463,8 +484,6 @@ export default class RouteEditorEngine {
       };
       const newHold = new Hold(this, hold);
       newHold.edit();
-
-      this.mode = CANVAS_MODE.EDIT;
     };
     this.wall.on('pointerup', onWallTap);
     this.removeListener = () => {
@@ -513,6 +532,9 @@ export default class RouteEditorEngine {
     };
     const onTouchEnd = () => {
       this._editingHoldInfo = reactive({});
+      if (this._eventTap) {
+        this.restoreLastMode();
+      }
     };
 
     this.stage.on('pointermove', onTouchMove);
