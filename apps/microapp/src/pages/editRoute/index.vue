@@ -49,7 +49,7 @@
       <canvas
         :id="worldElementId"
         :canvas-id="worldElementId"
-        class="absolute top-14 bottom-0 left-0 right-0 z-0 w-auto h-100"
+        class="absolute top-0 bottom-0 left-0 right-0 z-0 w-auto h-auto"
         ref="canvasRef"
         type="webgl"
         @touchstart="touchEvent"
