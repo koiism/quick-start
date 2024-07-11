@@ -72,6 +72,7 @@ class Hold {
     });
   }
   public update() {
+    this.limitHold();
     this.updateHoldSprite();
     this.updateHoldStroke();
   }
@@ -85,11 +86,27 @@ class Hold {
       this.listenEditHold();
     }
   }
+  private limitHold() {
+    const { x, y, size } = this._hold;
+    const minDistance = size / 2;
+    if (x < minDistance) {
+      this._hold.x = minDistance;
+    }
+    if (y < minDistance) {
+      this._hold.y = minDistance;
+    }
+    if (x > this.engine._wallInfo.originWidth - minDistance) {
+      this._hold.x = this.engine._wallInfo.originWidth - minDistance;
+    }
+    if (y > this.engine._wallInfo.originHeight - minDistance) {
+      this._hold.y = this.engine._wallInfo.originHeight - minDistance;
+    }
+  }
   private pointToWall({ x, y }: { x: number; y: number }) {
     const wall = this.engine.wall;
     return {
-      x: x - (wall.anchor._x * wall.width) / wall.scale.x,
-      y: y - (wall.anchor._y * wall.height) / wall.scale.y,
+      x: x - wall.anchor._x * this.engine._wallInfo.originWidth,
+      y: y - wall.anchor._y * this.engine._wallInfo.originHeight,
     };
   }
   private generateHold() {
@@ -288,8 +305,8 @@ class Hold {
     holdSpriteMask.width = this._hold.size;
     holdSpriteMask.height = this._hold.size;
     holdSprite.position.set(originPoint.x, originPoint.y);
-    holdSprite.width = this.engine.wall.width / this.engine.wall.scale.x;
-    holdSprite.height = this.engine.wall.height / this.engine.wall.scale.y;
+    holdSprite.width = this.engine._wallInfo.originWidth;
+    holdSprite.height = this.engine._wallInfo.originHeight;
   }
   private listenEditHold() {
     const onHoldTouch = () => {

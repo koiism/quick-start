@@ -64,7 +64,17 @@ export default class RouteEditorEngine {
   _editSchemaIndex: Ref<number> = ref(-1);
   _eventTap: boolean = true;
   _wallInfo: {
-    initialScale?: { _x: number; _y: number };
+    minScale?: { x: number; y: number };
+    minScaleX?: number;
+    minScaleY?: number;
+    originWidth: number;
+    originHeight: number;
+  } = reactive({
+    originWidth: 0,
+    originHeight: 0,
+  });
+  _eventInfo: {
+    eventInitialScale?: { _x: number; _y: number };
   } = reactive({});
   _editingHoldInfo: {
     initialSize?: number;
@@ -102,6 +112,7 @@ export default class RouteEditorEngine {
     this.stage = stage;
     const animate = () => {
       canvas.requestAnimationFrame(animate);
+      this.limitWall();
       this.renderSchema();
       renderer.render(stage);
     };
@@ -116,6 +127,13 @@ export default class RouteEditorEngine {
       this.wall = wall;
       this.stage.addChild(wall);
       this.mode = CANVAS_MODE.VIEW;
+      const { minScale, minScaleX, minScaleY } = this.calculateMinScale();
+      this._wallInfo.minScale = { x: minScale, y: minScale };
+      this._wallInfo.minScaleX = minScaleX;
+      this._wallInfo.minScaleY = minScaleY;
+      this._wallInfo.originWidth = image.width;
+      this._wallInfo.originHeight = image.height;
+      this.wall.scale.set(minScale, minScale);
       this.drawWallMask();
       this.loadSchema([]);
     };
@@ -125,8 +143,77 @@ export default class RouteEditorEngine {
   };
   private pointToWall({ x, y }: { x: number; y: number }) {
     return {
-      x: x - (this.wall.anchor._x * this.wall.width) / this.wall.scale.x,
-      y: y - (this.wall.anchor._y * this.wall.height) / this.wall.scale.y,
+      x: x - this.wall.anchor._x * this._wallInfo.originWidth,
+      y: y - this.wall.anchor._y * this._wallInfo.originHeight,
+    };
+  }
+  private limitWall() {
+    if (!this.wall) {
+      return;
+    }
+    const scale = this.wall.scale;
+    const { x = 0, y = 0 } = this._wallInfo.minScale ?? {};
+    this.wall.scale.set(Math.max(scale._x, x), Math.max(scale._y, y));
+
+    const wallCenter = {
+      x: this.wall.width / 2,
+      y: this.wall.height / 2,
+    };
+    const worldCenter = {
+      x: this._canvas.width / 2,
+      y: this._canvas.height / 2,
+    };
+    const originPoint = {
+      x: worldCenter.x - wallCenter.x + this.wall.anchor._x * this.wall.width,
+      y: worldCenter.y - wallCenter.y + this.wall.anchor._y * this.wall.height,
+    };
+    const wallCenterPoint = {
+      x:
+        this.wall.position.x +
+        wallCenter.x -
+        this.wall.anchor._x * this.wall.width,
+      y:
+        this.wall.position.y +
+        wallCenter.y -
+        this.wall.anchor._y * this.wall.height,
+    };
+    const vector = {
+      x: worldCenter.x - wallCenterPoint.x,
+      y: worldCenter.y - wallCenterPoint.y,
+    };
+    const overWidth = this.wall.width - this._canvas.width;
+    const overHeight = this.wall.height - this._canvas.height;
+    // 容错参数
+
+    if (vector.x > overWidth / 2) {
+      this.wall.position.x = originPoint.x - overWidth / 2;
+    }
+    if (vector.x < -overWidth / 2) {
+      this.wall.position.x = originPoint.x + overWidth / 2;
+    }
+    if (vector.y > overHeight / 2) {
+      this.wall.position.y = originPoint.y - overHeight / 2;
+    }
+    if (vector.y < -overHeight / 2) {
+      this.wall.position.y = originPoint.y + overHeight / 2;
+    }
+    if (this.wall.width <= this._canvas.width) {
+      this.wall.position.x = originPoint.x;
+    }
+    if (this.wall.height <= this._canvas.height) {
+      this.wall.position.y = originPoint.y;
+    }
+  }
+  private calculateMinScale() {
+    // 根据canvas的宽高和wall的宽高计算最小cover缩放比例
+    const { width, height } = this.wall;
+    const { width: canvasWidth, height: canvasHeight } = this._canvas;
+    const minScaleX = (canvasWidth * this.wall.scale._x) / width;
+    const minScaleY = (canvasHeight * this.wall.scale._y) / height;
+    return {
+      minScaleX,
+      minScaleY,
+      minScale: Math.min(minScaleX, minScaleY),
     };
   }
   private loadSchema(schema: THold[]) {
@@ -168,8 +255,8 @@ export default class RouteEditorEngine {
   }
   private updateWallMask() {
     const maskSprite = this._maskSprite;
-    maskSprite.width = this.wall.width / this.wall.scale.x;
-    maskSprite.height = this.wall.height / this.wall.scale.y;
+    maskSprite.width = this._wallInfo.originWidth;
+    maskSprite.height = this._wallInfo.originHeight;
     const { x: worldX, y: worldY } = this.pointToWall({ x: 0, y: 0 });
     maskSprite.position.set(worldX, worldY);
   }
@@ -232,10 +319,8 @@ export default class RouteEditorEngine {
         y: localPoint.y * this.wall.scale.y,
       };
       this.wall.anchor.set(
-        (localPoint.x * this.wall.scale.x) / this.wall.width +
-          this.wall.anchor._x,
-        (localPoint.y * this.wall.scale.y) / this.wall.height +
-          this.wall.anchor._y
+        localPoint.x / this._wallInfo.originWidth + this.wall.anchor._x,
+        localPoint.y / this._wallInfo.originHeight + this.wall.anchor._y
       );
       this.wall.position.copyFrom({
         x: centerPoint.x,
@@ -286,16 +371,14 @@ export default class RouteEditorEngine {
         y: localPoint.y * this.wall.scale.y,
       };
       this.wall.anchor.set(
-        (localPoint.x * this.wall.scale.x) / this.wall.width +
-          this.wall.anchor._x,
-        (localPoint.y * this.wall.scale.y) / this.wall.height +
-          this.wall.anchor._y
+        localPoint.x / this._wallInfo.originWidth + this.wall.anchor._x,
+        localPoint.y / this._wallInfo.originHeight + this.wall.anchor._y
       );
       this.wall.position.copyFrom({
         x: event.global.x,
         y: event.global.y,
       });
-      this._wallInfo.initialScale = Object.assign({}, this.wall.scale);
+      this._eventInfo.eventInitialScale = Object.assign({}, this.wall.scale);
     };
     const onTouchMove = (event) => {
       if (this.wall && this._clickOffset && !this._zoomStart) {
@@ -306,7 +389,7 @@ export default class RouteEditorEngine {
       }
     };
     const onTouchEnd = () => {
-      this._wallInfo = {};
+      this._eventInfo = {};
     };
 
     this.stage.on('pointermove', onTouchMove);
@@ -343,12 +426,12 @@ export default class RouteEditorEngine {
     };
   }
   private onViewModeZoomStart(_e) {
-    this._wallInfo.initialScale = Object.assign({}, this.wall.scale);
+    this._eventInfo.eventInitialScale = Object.assign({}, this.wall.scale);
   }
   private onViewModeZoom(scaleFactor) {
     const target = this.wall;
     if (target) {
-      const initialScale = this._wallInfo.initialScale;
+      const initialScale = this._eventInfo.eventInitialScale;
       target.scale.set(
         (initialScale?._x || 1) * scaleFactor,
         (initialScale?._y || 1) * scaleFactor
@@ -390,12 +473,12 @@ export default class RouteEditorEngine {
     };
   }
   private onInsertModeZoomStart(_e) {
-    this._wallInfo.initialScale = Object.assign({}, this.wall.scale);
+    this._eventInfo.eventInitialScale = Object.assign({}, this.wall.scale);
   }
   private onInsertModeZoom(scaleFactor) {
     const target = this.wall;
     if (target) {
-      const initialScale = this._wallInfo.initialScale;
+      const initialScale = this._eventInfo.eventInitialScale;
       target.scale.set(
         (initialScale?._x || 1) * scaleFactor,
         (initialScale?._y || 1) * scaleFactor
